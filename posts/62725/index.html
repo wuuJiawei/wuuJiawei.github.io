@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>Shiro使用多个Realm实现多种登录方式 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-02-19 22:48">
+                    2020年2月19日 晚上
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    3k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    46
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>大部分场景下，我们都会在项目中实现自定义 <code>Realm</code> 搭配 <code>UsernamePasswordToken</code> 来完成用户的登录认证流程，但是如果登录方式包括“第三方登录”、“手机号登录”等，仅凭 <code>UsernamePasswordToken</code> 就难以实现了，因为以上的两种登录方式都是免密登录，而  <code>UsernamePasswordToken</code> 却必须要有 <code>username</code> 和 <code>password</code>，因此需要自定义多个 Realm 和 Token 才能实现上述功能。</p>
+<p>本文只会实现第三方登录，以此为例，列位看官可以尝试修改代码实现自己的业务逻辑。</p>
+<p>另外，本文篇幅较长，代码量较多，看官们一定要耐心看完，万一漏写或写错了部分代码，耽误的可是更多的时间。</p>
+<h3 id="创建自定义-Token"><a href="#创建自定义-Token" class="headerlink" title="创建自定义 Token"></a>创建自定义 Token</h3><p>网上很多文章都继承 <code>UsernamePasswordToken</code> 来创建自己的 Token，但我不建议这样写，如果继承 <code>UsernamePasswordToken</code> ，在后面的操作中会变得相对麻烦。</p>
+<p>我们直接查看 <code>UsernamePasswordToken</code> 的源码，可以看到它实现了 <code>HostAuthenticationToken</code> 和 <code>RememberMeAuthenticationToken</code> ，而这两个类又分别实现了 <code>AuthenticationToken</code> ，因此在这里我们直接实现 <code>AuthenticationToken</code> 即可，同时重写 <code>getPrincipal()</code> 和 <code>getCredentials()</code> 两个方法。</p>
+<pre><code class="hljs plain">import org.apache.shiro.authc.AuthenticationToken;
+
+&#x2F;**
+ * 第三方授权登录凭证
+ * 注意这里要实现AuthenticationToken，不能继承UsernamePasswordToken
+ * 同时重写getPrincipal()和getCredentials()两个方法
+ * @author wujiawei0926@yeah.net
+ *&#x2F;
+public class OAuth2UserToken implements AuthenticationToken &#123;
+
+    &#x2F;**
+     *  授权类型
+     *  这里可以使用枚举
+      *&#x2F;
+    private String type;
+
+    &#x2F;&#x2F; 第三方登录后获取的用户信息
+    private OAuth2User user;
+
+    public OAuth2UserToken(final String type, final OAuth2User user) &#123;
+        this.type &#x3D; type;
+        this.user &#x3D; user;
+    &#125;
+
+    @Override
+    public Object getPrincipal() &#123;
+        return this.getUser();
+    &#125;
+
+    @Override
+    public Object getCredentials() &#123;
+        return this.getUser().getOpenid();
+    &#125;
+
+    public String getType() &#123;
+        return type;
+    &#125;
+
+    public void setType(String type) &#123;
+        this.type &#x3D; type;
+    &#125;
+
+    public OAuth2User getUser() &#123;
+        return user;
+    &#125;
+
+    public void setUser(OAuth2User user) &#123;
+        this.user &#x3D; user;
+    &#125;
+
+    &#x2F;**
+     * 用户信息类，用于新用户注册
+     * 可根据自己的具体业务进行拓展
+     *&#x2F;
+    public static class OAuth2User &#123;
+
+        public OAuth2User()&#123;&#125;;
+
+        private String openid;
+        private String username;
+        private String nickname;
+        private String avatar;
+        private String email;
+        private String remark;
+        private Integer sex;
+
+        public String getOpenid() &#123;
+            return openid;
+        &#125;
+
+        public void setOpenid(String openid) &#123;
+            this.openid &#x3D; openid;
+        &#125;
+
+        public String getUsername() &#123;
+            return username;
+        &#125;
+
+        public void setUsername(String username) &#123;
+            this.username &#x3D; username;
+        &#125;
+
+        public String getNickname() &#123;
+            return nickname;
+        &#125;
+
+        public void setNickname(String nickname) &#123;
+            this.nickname &#x3D; nickname;
+        &#125;
+
+        public String getAvatar() &#123;
+            return avatar;
+        &#125;
+
+        public void setAvatar(String avatar) &#123;
+            this.avatar &#x3D; avatar;
+        &#125;
+
+        public String getEmail() &#123;
+            return email;
+        &#125;
+
+        public void setEmail(String email) &#123;
+            this.email &#x3D; email;
+        &#125;
+
+        public String getRemark() &#123;
+            return remark;
+        &#125;
+
+        public void setRemark(String remark) &#123;
+            this.remark &#x3D; remark;
+        &#125;
+
+        public Integer getSex() &#123;
+            return sex;
+        &#125;
+
+        public void setSex(Integer sex) &#123;
+            this.sex &#x3D; sex;
+        &#125;
+    &#125;
+
+
+&#125;</code></pre>
+
+<h3 id="创建多个-Realm"><a href="#创建多个-Realm" class="headerlink" title="创建多个 Realm"></a>创建多个 Realm</h3><p>创建 Realm 时，必须重写 <code>supports()</code> 方法，在后面起到了至关重要的作用。</p>
+<p>作为演示，本文创建的 Realm 都没有做权限的授权，即 <code>doGetAuthorizationInfo()</code> 没有做具体的实现，列位看官需要加上自己的权限授权业务。</p>
+<p>首先是传统的 <code>UserRealm</code> ，相信列位看官对这个类都很熟悉，因此这里不再赘述，直接贴上代码：</p>
+<pre><code class="hljs plain">import com.*.dao.UserDao;
+import com.*.model.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+
+&#x2F;**
+ * Shiro认证和授权
+ * @author wujiawei0926@yeah.net
+ *&#x2F;
+public class UserRealm extends AuthorizingRealm &#123;
+
+    @Autowired
+    private UserDao userService;
+
+    &#x2F;**
+     * 一定要重写support()方法，在后面的身份验证器中会用到
+     * @param token
+     * @return
+     *&#x2F;
+    @Override
+    public boolean supports(AuthenticationToken token) &#123;
+        return token instanceof UsernamePasswordToken;
+    &#125;
+
+    &#x2F;**
+     * 授权
+     *&#x2F;
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;
+        User user &#x3D; (User) SecurityUtils.getSubject().getPrincipal();
+        SimpleAuthorizationInfo authorizationInfo &#x3D; new SimpleAuthorizationInfo();
+        return authorizationInfo;
+    &#125;
+
+    &#x2F;**
+     * 认证
+     *&#x2F;
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;
+        String username &#x3D; (String) authenticationToken.getPrincipal();
+        User user &#x3D; userService.findByUsername(username);
+        if (user &#x3D;&#x3D; null) &#123;
+            throw new UnknownAccountException(); &#x2F;&#x2F; 账号不存在
+        &#125;
+        if (user.getDisabled() &#x3D;&#x3D; 1) &#123;
+            throw new LockedAccountException();
+        &#125;
+        if (user.getUserType() !&#x3D; 0) &#123;
+            throw new ConcurrentAccessException();
+        &#125;
+        SimpleAuthenticationInfo authenticationInfo &#x3D; new SimpleAuthenticationInfo(user, user.getPassword(), getName());
+        return authenticationInfo;
+    &#125;
+&#125;</code></pre>
+
+<p>然后创建我们的免密登陆 Realm，与 <code>UserRealm</code> 相同，继承 <code>AuthorizingRealm</code> 即可，同样的，也要重写 <code>supports()</code> 方法，并且再多重写一个 <code>getName()</code> 方法，在后面也会用到。</p>
+<p>用户登录的方法写在 <code>doGetAuthenticationInfo</code> 中，通过校验 <code>openid</code>，实现老用户的登录和新用户的注册，下面贴上代码：</p>
+<pre><code class="hljs plain">import com.*.dao.UserDao;
+import com.w.module.base.model.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+&#x2F;**
+* 自定义第三方登录授权Realm
+* @author wujiawei0926@yeah.net
+*&#x2F;
+public class OAuth2UserRealm extends AuthorizingRealm &#123;
+
+   public static final String REALM_NAME &#x3D; &quot;oauth2_user_realm&quot;;
+
+   @Autowired
+   private UserDao userDao;
+
+   @Override
+   public String getName() &#123;
+       return REALM_NAME;
+   &#125;
+
+   &#x2F;**
+    * 检查是否支持该Realm
+    * 一定要重写support()方法，在后面的身份验证器中会用到
+    * @param token
+    * @return
+    *&#x2F;
+   @Override
+   public boolean supports(AuthenticationToken token) &#123;
+       return token instanceof OAuth2UserToken;
+   &#125;
+
+   &#x2F;**
+    * 授权
+    * @param principalCollection
+    * @return
+    *&#x2F;
+   @Override
+   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;
+       User user &#x3D; (User) SecurityUtils.getSubject().getPrincipal();
+       SimpleAuthorizationInfo authorizationInfo &#x3D; new SimpleAuthorizationInfo();
+       return authorizationInfo;
+   &#125;
+
+   &#x2F;**
+    * 认证
+    * 在这个方法中，完成老用户的登录与新用户的注册
+    * @param authenticationToken
+    * @return
+    * @throws AuthenticationException
+    *&#x2F;
+   @Override
+   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;
+       OAuth2UserToken token &#x3D; (OAuth2UserToken)authenticationToken;
+       OAuth2UserToken.OAuth2User oAuth2User &#x3D; token.getUser();
+
+       &#x2F;&#x2F; 校验openid
+       if (oAuth2User &#x3D;&#x3D; null) &#123;
+           throw new AuthenticationException();
+       &#125;
+
+       &#x2F;&#x2F; 根据openid查询用户数据
+       String openid &#x3D; oAuth2User.getOpenid();
+       User user &#x3D; null;
+       switch (token.getType()) &#123;
+           case &quot;qq&quot;:
+               user &#x3D; userDao.findByQqOpenid(openid);
+               break;
+           case &quot;weixin&quot;:
+               user &#x3D; userDao.findByWxOpenid(openid);
+               break;
+           default:
+               break;
+       &#125;
+
+       if (user &#x3D;&#x3D; null) &#123;
+           &#x2F;&#x2F; TODO 获取oAuth2User中用户信息进行注册
+       &#125;
+       if (user.getDisabled() &#x3D;&#x3D; 1) &#123;
+           &#x2F;&#x2F; 账号被拉黑
+           throw new LockedAccountException();
+       &#125;
+
+       &#x2F;&#x2F; 完成登录，注意这里传的principal和credentials
+       &#x2F;&#x2F; principal: OAuth2UserToken类中getPrincipal()的返回值
+       &#x2F;&#x2F; credentials: OAuth2UserToken类中getCredentials()的返回值
+       SimpleAuthenticationInfo authenticationInfo &#x3D; new SimpleAuthenticationInfo(user, openid, getName());
+       return authenticationInfo;
+   &#125;
+&#125;</code></pre>
+
+<h3 id="创建自定义-ModularRealmAuthenticator"><a href="#创建自定义-ModularRealmAuthenticator" class="headerlink" title="创建自定义 ModularRealmAuthenticator"></a>创建自定义 ModularRealmAuthenticator</h3><p><code>Token</code> 和 <code>Realm</code> 创建完成之后，需要再创建一个 <code>ModularRealmAuthenticator</code> 来进行绑定操作，让程序知道碰到这个 <code>Token</code> 时进入对应的 <code>Realm</code>。</p>
+<p>这步其实很简单，只需要重写 <code>doMultiRealmAuthentication(Collection&lt;Realm&gt; realms, AuthenticationToken token)</code> 方法，该方法有两个参数，其中 <code>realms</code> 是 <code>ShiroConfig</code> 中配置的所有 realm 集合，<code>token</code> 就是登录时传入的用户信息 token，在我们这边只会是 <code>UsernamePasswordToken</code> 或 <code>OAuth2UserToken</code>。</p>
+<p>在 <code>doMultiRealmAuthentication()</code> 方法中遍历所有的 realm，通过每个 realm 的 <code>supports()</code> 方法来进行匹配。</p>
+<pre><code class="hljs plain">package com.w.common.config.shiro;
+
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
+import org.apache.shiro.authc.pam.UnsupportedTokenException;
+import org.apache.shiro.realm.Realm;
+
+import java.util.Collection;
+
+&#x2F;**
+ * 自定义身份验证器，根据登录使用的Token匹配调用对应的Realm
+ * @author wujiawei0926@yeah.net
+ *&#x2F;
+public class CustomModularRealmAuthenticator extends ModularRealmAuthenticator &#123;
+
+    &#x2F;**
+     * 自定义Realm的分配策略
+     * 通过realm.supports()方法匹配对应的Realm，因此才要在Realm中重写supports()方法
+     * @param realms
+     * @param token
+     * @return
+     *&#x2F;
+    @Override
+    protected AuthenticationInfo doMultiRealmAuthentication(Collection&lt;Realm&gt; realms, AuthenticationToken token) &#123;
+        &#x2F;&#x2F; 判断getRealms()是否返回为空
+        assertRealmsConfigured();
+
+        &#x2F;&#x2F; 通过supports()方法，匹配对应的Realm
+        Realm uniqueRealm &#x3D; null;
+        for (Realm realm : realms) &#123;
+            if (realm.supports(token)) &#123;
+                uniqueRealm &#x3D; realm;
+                break;
+            &#125;
+        &#125;
+        if (uniqueRealm &#x3D;&#x3D; null) &#123;
+            throw new UnsupportedTokenException();
+        &#125;
+        return uniqueRealm.getAuthenticationInfo(token);
+    &#125;
+&#125;</code></pre>
+
+<h3 id="配置-ShiroConfig"><a href="#配置-ShiroConfig" class="headerlink" title="配置 ShiroConfig"></a>配置 ShiroConfig</h3><p><code>ShiroConfig</code> 中需要添加或修改一下配置：</p>
+<ol>
+<li><code>modularRealmAuthenticator</code>，告诉 Shiro，以后使用我们自定义的身份验证器：</li>
+</ol>
+<pre><code class="hljs plain">&#x2F;**
+ * 针对多Realm，使用自定义身份验证器
+ * @return
+ *&#x2F;
+@Bean
+public ModularRealmAuthenticator modularRealmAuthenticator()&#123;
+    CustomModularRealmAuthenticator authenticator &#x3D; new CustomModularRealmAuthenticator();
+    authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+    return authenticator;
+&#125;</code></pre>
+
+<ol>
+<li><code>realm</code>，把创建的所有 realm 都注册到 bean 中：</li>
+</ol>
+<pre><code class="hljs plain">&#x2F;**
+ * 免密授权登录
+ * @return
+ *&#x2F;
+@Bean
+public OAuth2UserRealm oAuth2UserRealm()&#123;
+    OAuth2UserRealm realm &#x3D; new OAuth2UserRealm();
+    &#x2F;&#x2F; 不需要加密，直接返回
+    return realm;
+&#125;
+
+@Bean
+public UserRealm userRealm() &#123;
+    UserRealm userRealm &#x3D; new UserRealm();
+    userRealm.setCredentialsMatcher(credentialsMatcher());
+    return userRealm;
+&#125;</code></pre>
+
+<ol>
+<li><code>securityManager</code>，让安全管理器使用我们创建的身份验证器，并添加所有的 realm：</li>
+</ol>
+<pre><code class="hljs plain">@Bean(name &#x3D; &quot;securityManager&quot;)
+public DefaultWebSecurityManager securityManager() &#123;
+    DefaultWebSecurityManager securityManager &#x3D; new DefaultWebSecurityManager();
+    securityManager.setCacheManager(cacheManager());
+    securityManager.setSessionManager(sessionManager());
+
+    &#x2F;&#x2F; 设置验证器为自定义验证器
+    securityManager.setAuthenticator(modularRealmAuthenticator());
+    &#x2F;&#x2F; 设置Realms
+    List&lt;Realm&gt; realms &#x3D; new ArrayList&lt;&gt;(2);
+    realms.add(userRealm());
+    realms.add(oAuth2UserRealm());
+    securityManager.setRealms(realms);
+
+    return securityManager;
+&#125;</code></pre>
+
+<p>最后把我的 <code>ShiroConfig</code> 完整代码奉上，各位参考即可：</p>
+<pre><code class="hljs plain">import com.*.config.filter.MyLoginFilter;
+import com.*.config.filter.MyLogoutFilter;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.web.filter.DelegatingFilterProxy;
+
+import javax.servlet.Filter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+&#x2F;**
+ * shiro框架配置
+ *&#x2F;
+@Configuration
+public class ShiroConfig &#123;
+
+    @Bean(name &#x3D; &quot;shiroFilter&quot;)
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager) &#123;
+        ShiroFilterFactoryBean shiroFilter &#x3D; new ShiroFilterFactoryBean();
+        shiroFilter.setSecurityManager(securityManager);
+        &#x2F;&#x2F; 登录配置
+        shiroFilter.setLoginUrl(&quot;login&quot;);
+        shiroFilter.setSuccessUrl(&quot;system&quot;);
+        shiroFilter.setUnauthorizedUrl(&quot;&#x2F;error?code&#x3D;403&quot;);
+        &#x2F;&#x2F; 自定义过滤器
+        Map&lt;String, Filter&gt; filtersMap &#x3D; new LinkedHashMap&lt;&gt;();
+        filtersMap.put(&quot;access&quot;, new MyLoginFilter());
+        filtersMap.put(&quot;mylogout&quot;, new MyLogoutFilter());
+        shiroFilter.setFilters(filtersMap);
+        &#x2F;&#x2F; 拦截配置
+        Map&lt;String, String&gt; filterChainDefinitions &#x3D; new LinkedHashMap&lt;&gt;();
+        filterChainDefinitions.put(&quot;&#x2F;logout&quot;, &quot;mylogout&quot;);
+        filterChainDefinitions.put(&quot;&#x2F;system&#x2F;**&quot;, &quot;access,authc&quot;);
+        filterChainDefinitions.put(&quot;&#x2F;**&quot;, &quot;anon&quot;);
+        shiroFilter.setFilterChainDefinitionMap(filterChainDefinitions);
+        return shiroFilter;
+    &#125;
+
+    @Bean(name &#x3D; &quot;securityManager&quot;)
+    public DefaultWebSecurityManager securityManager() &#123;
+        DefaultWebSecurityManager securityManager &#x3D; new DefaultWebSecurityManager();
+        securityManager.setCacheManager(cacheManager());
+        securityManager.setSessionManager(sessionManager());
+
+        &#x2F;&#x2F; 设置验证器为自定义验证器
+        securityManager.setAuthenticator(modularRealmAuthenticator());
+        &#x2F;&#x2F; 设置Realms
+        List&lt;Realm&gt; realms &#x3D; new ArrayList&lt;&gt;(2);
+        realms.add(userRealm());
+        realms.add(oAuth2UserRealm());
+        securityManager.setRealms(realms);
+
+        return securityManager;
+    &#125;
+
+    &#x2F;**
+     * 针对多Realm，使用自定义身份验证器
+     * @return
+     *&#x2F;
+    @Bean
+    public ModularRealmAuthenticator modularRealmAuthenticator()&#123;
+        CustomModularRealmAuthenticator authenticator &#x3D; new CustomModularRealmAuthenticator();
+        authenticator.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+        return authenticator;
+    &#125;
+
+    &#x2F;**
+     * 免密授权登录
+     * @return
+     *&#x2F;
+    @Bean
+    public OAuth2UserRealm oAuth2UserRealm()&#123;
+        OAuth2UserRealm realm &#x3D; new OAuth2UserRealm();
+        &#x2F;&#x2F; 不需要加密，直接返回
+        return realm;
+    &#125;
+
+    @Bean
+    @DependsOn(&quot;lifecycleBeanPostProcessor&quot;)
+    public UserRealm userRealm() &#123;
+        UserRealm userRealm &#x3D; new UserRealm();
+        userRealm.setCredentialsMatcher(credentialsMatcher());
+        return userRealm;
+    &#125;
+
+    @Bean
+    public DefaultWebSessionManager sessionManager()&#123;
+        DefaultWebSessionManager manager &#x3D; new DefaultWebSessionManager();
+        manager.setSessionDAO(sessionDAO());
+        manager.setGlobalSessionTimeout(10800000);
+        manager.setDeleteInvalidSessions(true);
+        manager.setSessionValidationSchedulerEnabled(true);
+        manager.setSessionValidationInterval(10800000);
+        return manager;
+    &#125;
+
+    @Bean
+    public SessionDAO sessionDAO()&#123;
+        return new MemorySessionDAO();
+    &#125;
+
+    @Bean(name &#x3D; &quot;cacheManager&quot;)
+    public EhCacheManager cacheManager() &#123;
+        EhCacheManager cacheManager &#x3D; new EhCacheManager();
+        cacheManager.setCacheManagerConfigFile(&quot;classpath:shiro&#x2F;ehcache-shiro.xml&quot;);
+        return cacheManager;
+    &#125;
+
+    @Bean(name &#x3D; &quot;credentialsMatcher&quot;)
+    public CredentialsMatcher credentialsMatcher() &#123;
+        return new CredentialsMatcher();
+    &#125;
+
+    @Bean(name &#x3D; &quot;lifecycleBeanPostProcessor&quot;)
+    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() &#123;
+        LifecycleBeanPostProcessor lifecycleBeanPostProcessor &#x3D; new LifecycleBeanPostProcessor();
+        return lifecycleBeanPostProcessor;
+    &#125;
+
+    &#x2F;**
+     * shiro里实现的Advisor类,用来拦截注解的方法 .
+     *&#x2F;
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor() &#123;
+        AuthorizationAttributeSourceAdvisor advisor &#x3D; new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager());
+        return advisor;
+    &#125;
+
+    @Bean
+    @DependsOn(&#123;&quot;lifecycleBeanPostProcessor&quot;&#125;)
+    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator() &#123;
+        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator &#x3D; new DefaultAdvisorAutoProxyCreator();
+        advisorAutoProxyCreator.setProxyTargetClass(true);
+        return advisorAutoProxyCreator;
+    &#125;
+
+    @Bean
+    public FilterRegistrationBean delegatingFilterProxy()&#123;
+        FilterRegistrationBean filterRegistrationBean &#x3D; new FilterRegistrationBean();
+        DelegatingFilterProxy proxy &#x3D; new DelegatingFilterProxy();
+        proxy.setTargetFilterLifecycle(true);
+        proxy.setTargetBeanName(&quot;shiroFilter&quot;);
+        filterRegistrationBean.setFilter(proxy);
+        return filterRegistrationBean;
+    &#125;
+
+&#125;</code></pre>
+
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>上面都配置好之后，终于到了登录。</p>
+<p>这时候就很简单了，在登录方法中，实例化对应的 Token，然后调用 subject 的 <code>login()</code> 方法，及时捕获异常，没有排除异常代表登录认证成功。</p>
+<p>例如传统的账号密码登录，这里的 <code>username</code> 和 <code>password</code> 就是前端传的值：</p>
+<pre><code class="hljs plain">try &#123;
+    UsernamePasswordToken token &#x3D; new UsernamePasswordToken(username, password);
+    SecurityUtils.getSubject().login(token);
+    return Result.ok(&quot;登录成功&quot;);
+&#125; catch (IncorrectCredentialsException ice) &#123;
+    return Result.error(&quot;密码错误&quot;);
+&#125; catch (UnknownAccountException uae) &#123;
+    return Result.error(&quot;账号不存在&quot;);
+&#125; catch (LockedAccountException e) &#123;
+    return Result.error(&quot;账号被锁定&quot;);
+&#125; catch (ExcessiveAttemptsException eae) &#123;
+    return Result.error(&quot;操作频繁，请稍后再试&quot;);
+&#125; catch (ConcurrentAccessException cae) &#123;
+    return Result.error(&quot;没有权限，无法登陆&quot;);
+&#125;</code></pre>
+
+<p>而第三方登录就实例化 <code>OAuth2UserToken</code>，将第三方平台的类型及其回调的 openid 等信息保存到 token 中，然后调用 subject 的 <code>login()</code> 方法：</p>
+<pre><code class="hljs plain">&#x2F;&#x2F; 实例化自定义的授权Token
+OAuth2UserToken.OAuth2User oAuth2User &#x3D; new OAuth2UserToken.OAuth2User();
+oAuth2User.setOpenid(authUser.getUuid());
+oAuth2User.setNickname(authUser.getNickname());
+OAuth2UserToken userToken &#x3D; new OAuth2UserToken(type, oAuth2User);
+&#x2F;&#x2F; 调用login方法
+SecurityUtils.getSubject().login(userToken);
+servletResponse.sendRedirect(&quot;&#x2F;&quot;);</code></pre>
+
+<h3 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h3><p>将上面代码全部写好之后，启动项目，尝试用户名密码登录和第三方免密登录，如果没有问题则大功告成，如果报错了，看官应注意检查是否遗漏代码。</p>
+<p>同时注意，上面的代码切忌照搬，还是以理解为主。</p>
+<p>如果存在疑问，或者有任何的建议，欢迎评论留言！</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Shiro/">Shiro</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/7912/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">github markdown 支持的 emoji 完整列表</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/57668/">
+                        <span class="hidden-mobile">uniapp真机调试技巧</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Shiro使用多个Realm实现多种登录方式&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

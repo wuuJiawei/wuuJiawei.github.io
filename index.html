@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/14639/" target="_self">
+          <img src="https://cdn.pixabay.com/photo/2017/10/29/15/34/stormtrooper-2899993_960_720.jpg" srcset="/img/loading.gif" alt="Java Bean Copy性能对比">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/14639/">Java Bean Copy性能对比</a>
+
+      <a href="/posts/14639/" class="index-excerpt">
+        
+        
+          
+        
+        <div>常用的对象复制方法
+Apache BeanUtils
+
+Spring BeanUtils
+
+Spring BeanCopier
+
+Cglib BeanCopier
+
+Hutool BeanUtil
+
+get/set
+
+
+测试环境
+Java8
+
+4核16G台式机
+
+
+依赖&lt;!-- Spring BeanUtils, Spring Copier --&gt;
+&lt;parent&gt;
+   </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-05-15
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/springboot/">springboot</a>
+            
+              <a href="/tags/Java/">Java</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/41511/" target="_self">
+          <img src="https://cdn.pixabay.com/photo/2017/07/09/16/33/funnel-2487506_960_720.jpg" srcset="/img/loading.gif" alt="SpringBoot实现API限流（一）">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/41511/">SpringBoot实现API限流（一）</a>
+
+      <a href="/posts/41511/" class="index-excerpt">
+        
+        
+          
+        
+        <div>限流算法漏桶算法漏桶算法很简单，如下图所示，水直接进入漏桶，漏桶按一定的速度出水，当水进入速度过大会直接溢出，由此可以看出漏桶算法的优势在于能够限制数据的传输速率。
+漏桶的出水速度是固定的参数，所以无论并发的请求数是多少，释放出来的速度恒定，无法为某一个单独的流改变端口速率。
+因此其显而易见的缺点就是不能有效利用网络资源，无法承担突发的流量请求，效率偏低。
+
+令牌桶算法令牌桶的原理也好理解，其实就</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-05-12
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/springboot/">springboot</a>
+            
+              <a href="/tags/%E9%99%90%E6%B5%81/">限流</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/48906/" target="_self">
+          <img src="https://cdn.pixabay.com/photo/2018/02/24/20/39/clock-3179167_960_720.jpg" srcset="/img/loading.gif" alt="SpringBoot定时任务">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/48906/">SpringBoot定时任务</a>
+
+      <a href="/posts/48906/" class="index-excerpt">
+        
+        
+          
+        
+        <div>常用的定时任务实现
+Quartz：支持单机与分布式的定时任务框架，功能十分强大，但需要额外集成
+
+Timer：JDK自带的定时任务，功能单一
+
+SpringSchedule：SpringBoot自带，使用方便，功能基本满足需求
+
+
+创建定时任务在SpringBoot项目中，直接使用@Scheduled注解创建定时任务
+import org.springframework.scheduling.an</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-05-07
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/springboot/">springboot</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/21205/" target="_self">
+          <img src="https://cdn.pixabay.com/photo/2014/07/11/17/12/dictionary-390055_960_720.jpg" srcset="/img/loading.gif" alt="SpringBoot通过AOP实现数据字典">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/21205/">SpringBoot通过AOP实现数据字典</a>
+
+      <a href="/posts/21205/" class="index-excerpt">
+        
+        
+          
+        
+        <div>什么是数据字典这是一段来自维基百科的解释：
+
+数据字典（英语：data dictionary）是一个自动的或手动的存储数据元的定义和属性的文档。
+指一组对数据流程图中的数据流、数据文件、数据项及处理逻辑进行定义描述的表格。
+
+不难理解，从编程的角度想，数据字典就是程序中存储各种基础、通用属性的东西，类似于性别、用户类型、删除状态等常用的属性，都可以统一由数据字典进行维护。
+为什么要数据字典在没有数</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-30
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/springboot/">springboot</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/32750/" target="_self">
+          <img src="https://raw.githubusercontent.com/hexojs/logo/master/hexo-logo-avatar.png" srcset="/img/loading.gif" alt="CentOS安装Hexo教程">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/32750/">CentOS安装Hexo教程</a>
+
+      <a href="/posts/32750/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言自建博客已经有小半个年头，初入门时用wordpress搭建了小站，使用约莫一两个星期之后，深感其加载之慢、系统之臃肿，当然也因为当时能力确实不足，无力驾驭如此成熟的平台，愤而转向solo。
+由b3log组织开发的solo系统，不失为小白入门的选择，优雅的界面设计，轻快的加载速度，让我不断地向周围朋友进行安利。奈何小服务器配置实在太低，装了一个solo之后再想装其他的Java应用时，不免拙荆见肘</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-27
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">安装教程</a>
+            
+              <a href="/tags/hexo/">hexo</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/39281/" target="_self">
+          <img src="https://www.w3cschool.cn/attachments/image/20170526/1495798711725561.png" srcset="/img/loading.gif" alt="mysql保留关键字参考指南">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/39281/">mysql保留关键字参考指南</a>
+
+      <a href="/posts/39281/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言mysql中存在大量的关键字和保留字，在设计字段时应即时规避，防止未来可能出现的一系列sql问题。
+笔者正是因为缺乏经验，不清楚这方面约定，耗费了大量精力debug各方源码，徒做无用功。
+参考文档mysql8 参考手册–关键字和保留字
+快速查询如果您想要快速验证某个字段是否关键字或保留字，鼠标点一下当前页面，然后ctrl+F进行搜索，可以直接定位到对应的内容
+列表ACCESSIBLE （R）
+</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-16
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/mysql/">mysql</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/posts/41167/">Jackson常用方法总结</a>
+
+      <a href="/posts/41167/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言最近风闻FastJSON各种安全漏洞，果断更换以性能和灵活性著称的Jackson。
+正文
+Java对象转JsonNode对象（3种方法）
+
+ObjectMapper mapper &#x3D; new ObjectMapper(); 
+String json &#x3D; mapper.writeValueAsString(object);
+JsonNode jsonNode &#x3D; m</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-15
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/jackson/">jackson</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/posts/31938/">TortoiseGit正确使用ssh指南</a>
+
+      <a href="/posts/31938/" class="index-excerpt">
+        
+        
+          
+        
+        <div>前言前一阵用TortoiseGit Clone SSH地址和Push时出现了一些问题，所幸最终全部解决，但着实费了一番功夫，赶紧来记录一下，避免下次再调到坑里。
+本文将完整记录从生成RSA公钥到最终Push的过程，使用图文结合的方式，保证一看就懂、一学就会（一试就废）。
+本文所有操作都在windows系统上，不提供mac教程（穷）。
+生成RSA公钥打开git-bash.exe，输入如下指令：
+cd</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-02
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/git/">git</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/58332/" target="_self">
+          <img src="https://img.hacpai.com/bing/20200128.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt="Mybatis(Plus)结合Redis配置二级缓存">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/58332/">Mybatis(Plus)结合Redis配置二级缓存</a>
+
+      <a href="/posts/58332/" class="index-excerpt">
+        
+        
+          
+        
+        <div> 
+前言众所周知，Mybatis有一级、二级缓存配置。
+一级缓存是SqlSession将每次查询结果保存到Cache中，下次有一样的查询就直接存Cache中获取，避免频繁读写造成数据库资源浪费。
+但是一级缓存终究只是在Cache中，性能相较于EhCache或Redis等有差异，因此我们决定开启二级缓存，并将缓存直接保存到外部Redis中，保证资源的有效利用。
+注意事项本文涉及代码依赖于Spring</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-02
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/mybatis/">mybatis</a>
+            
+              <a href="/tags/redis/">redis</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/14426/" target="_self">
+          <img src="https://img.hacpai.com/bing/20190629.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt="MongoDB入门指南">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/14426/">MongoDB入门指南</a>
+
+      <a href="/posts/14426/" class="index-excerpt">
+        
+        
+          
+        
+        <div>
+前言最近项目中计划引入MongoDB，全面替换Mysql。作为非关系型数据库，要替换关系型数据库，代码改动量不可小觑，并且由于没有实战经验，不免要踩一些坑。
+在这里记录完整的学习和踩坑笔记，一来巩固自身理解、加深记忆，二来为后来者提供学习的平台。
+当然传统上来说，使用非关系型数据库全面替换关系型数据库的操作并不可取，更合理的做法是将两者结合，传统业务使用关系型数据，类似日志、文件存储等增长规模很</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-03-31
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/mangodb/">mangodb</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+  
+  <script>
+    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
+      ele.href += '#board';
+    }
+  </script>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "要有为，要无畏&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

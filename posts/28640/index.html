@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>ELK（Elasticsearch、Logstash、Kibana）安装指南 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2019-11-16 14:20">
+                    2019年11月16日 下午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.2k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    16
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p><img src="https://img.hacpai.com/bing/20190304.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt=""> </p>
+<blockquote>
+<p>我使用的环境是centos，如果是运行环境是其他系统的小伙伴，需要另行寻找资料❤️ </p>
+</blockquote>
+<h1 id="什么是-ELK"><a href="#什么是-ELK" class="headerlink" title="什么是 ELK"></a>什么是 ELK</h1><ul>
+<li>E: Elasticsearch，它是一个实时的分布式搜索分析引擎，通常被用于全文检索、结构化搜索、分析以及这三个功能的组合，包括 GitHub、Stack Overflow 等大厂都在使用<br>官网：<a href="https://www.elastic.co/cn/" target="_blank" rel="noopener">https://www.elastic.co/cn/</a></li>
+<li>L: Logstash，它是一款强大的数据处理工具，可以实现数据传输，格式处理，格式化输出，还有强大的插件功能，常用于日志处理<br>官网：</li>
+<li>K: Kibana，它是一个开源和免费的工具，可以为 Logstash 和 Elasticsearch 提供的日志分析的 Web 界面，用来汇总、分析和搜索重要数据日志<br>官网：</li>
+</ul>
+<h1 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h1><blockquote>
+<p>官网安装教程：<a href="https://computingforgeeks.com/how-to-install-elk-stack-on-centos-fedora/" target="_blank" rel="noopener">https://computingforgeeks.com/how-to-install-elk-stack-on-centos-fedora/</a></p>
+</blockquote>
+<blockquote>
+<p>清华大学镜像站：<a href="https://mirrors.tuna.tsinghua.edu.cn/elasticstack/yum/elastic-7.x/7.4.2/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/elasticstack/yum/elastic-7.x/7.4.2/</a></p>
+</blockquote>
+<blockquote>
+<p>其实官网提供的教程很详细，但是如果没有科学上网的话，安装过程会非常缓慢，所以我们使用清华大学的镜像，将rpm下载好后直接安装</p>
+</blockquote>
+<h2 id="下载安装包"><a href="#下载安装包" class="headerlink" title="下载安装包"></a>下载安装包</h2><p><strong>1.</strong> 下载ELK相关安装包<br><strong>1.1.</strong>   打开 <a href="https://mirrors.tuna.tsinghua.edu.cn/elasticstack/yum/elastic-7.x/7.4.2/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/elasticstack/yum/elastic-7.x/7.4.2/</a> ，这里选择的版本是7.4.2，如果需要其他版本的同学可以自己选择其他版本下载。<br>  <img src="https://img.hacpai.com/file/2019/11/image-84fcca57.png" srcset="/img/loading.gif" alt="image.png"><br>  <img src="https://img.hacpai.com/file/2019/11/image-628ed7a9.png" srcset="/img/loading.gif" alt="image.png"><br>  <img src="https://img.hacpai.com/file/2019/11/image-9d11354a.png" srcset="/img/loading.gif" alt="image.png"><br>  点击上面三个进行下载。<br><strong>1.2.</strong>  下载完成后，将上述3个安装包上传到服务器指定目录<code>/www/wwwroot/elk</code>。<br>  推荐一个SSH工具：<code>FinalShell</code>，提供了可视化的UI界面，可以很方便的上传、编辑文件。</p>
+<h2 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h2><p><strong>2.</strong> 通过SSH连接服务器，使用yum安装Java</p>
+<pre><code class="hljs plain">yum -y install java-1.8.0-openjdk-devel java-1.8.0-openjdk</code></pre>
+<p>安装完成后输入<code>java -version</code>验证是否成功，出现下图即说明安装成功：<br><img src="https://img.hacpai.com/file/2019/11/image-b8060ee1.png" srcset="/img/loading.gif" alt="image.png"></p>
+<h2 id="安装ELK"><a href="#安装ELK" class="headerlink" title="安装ELK"></a>安装ELK</h2><p><strong>3.</strong> 分别安装ELK<br><strong>3.1.</strong> Elasticsearch</p>
+<pre><code class="hljs plain">cd  &#x2F;www&#x2F;wwwroot&#x2F;elk  &#x2F;&#x2F;进入刚才上传的rpm目录 
+rpm -ivh elasticsearch-7.4.2-x86_64.rpm</code></pre>
+<p>稍等片刻，安装完成之后，可以使用下面的命令确认安装是否成功</p>
+<pre><code class="hljs plain">rpm -qi elasticsearch</code></pre>
+<p>出现如下信息，说明安装成功：</p>
+<pre><code class="hljs plain">Name        : elasticsearch
+Epoch       : 0
+Version     : 7.4.2
+Release     : 1
+Architecture: x86_64
+Install Date: Sat 16 Nov 2019 10:11:37 PM CST
+Group       : Application&#x2F;Internet
+Size        : 488085180
+License     : Elastic License
+Signature   : RSA&#x2F;SHA512, Tue 29 Oct 2019 07:14:54 AM CST, Key ID d27d666cd88e42b4
+Source RPM  : elasticsearch-7.4.2-1-src.rpm
+Build Date  : Tue 29 Oct 2019 04:55:59 AM CST
+Build Host  : packer-virtualbox-iso-1559162487
+Relocations : &#x2F;usr 
+Packager    : Elasticsearch
+Vendor      : Elasticsearch
+URL         : https:&#x2F;&#x2F;www.elastic.co&#x2F;
+Summary     : Distributed RESTful search engine built for the cloud
+Description :
+Reference documentation can be found at
+https:&#x2F;&#x2F;www.elastic.co&#x2F;guide&#x2F;en&#x2F;elasticsearch&#x2F;reference&#x2F;current&#x2F;index.html
+and the &#39;Elasticsearch: The Definitive Guide&#39; book can be found at
+https:&#x2F;&#x2F;www.elastic.co&#x2F;guide&#x2F;en&#x2F;elasticsearch&#x2F;guide&#x2F;current&#x2F;index.html</code></pre>
+<blockquote>
+<p>如果想要修改JVM配置，比如内存占用等配置，可以编辑 <code>/etc/elasticsearch/jvm.options</code>文件。<br>下面示例如何修改堆内存的初始、最大内存占用  </p>
+<pre><code class="hljs plain">-Xms1g  
+-Xmx1g  
+&#96;&#96;&#96;  
+如果你的机器内存比较少，可以将上述两个参数改小  
+&#96;&#96;&#96;  
+-Xms256m  
+-Xmx512m  </code></pre>
+
+</blockquote>
+<p>启动elasticsearch服务</p>
+<pre><code class="hljs plain">sudo systemctl enable --now elasticsearch.service</code></pre>
+<blockquote>
+<p>测试一下服务是否正常运行: <code>curl http://127.0.0.1:9200</code></p>
+<p><img src="https://img.hacpai.com/file/2019/11/image-a41c0474.png" srcset="/img/loading.gif" alt="image.png"></p>
+</blockquote>
+<p><strong>3.2.</strong> 安装Kibana</p>
+<pre><code class="hljs plain">cd  &#x2F;www&#x2F;wwwroot&#x2F;elk  &#x2F;&#x2F;进入刚才上传的rpm目录 
+rpm -ivh kibana-7.4.2-x86_64.rpm</code></pre>
+<p>稍等片刻，安装成功后，修改Kibana配置</p>
+<pre><code class="hljs plain">sudo vim &#x2F;etc&#x2F;kibana&#x2F;kibana.yml</code></pre>
+<pre><code class="hljs plain">server.host: &quot;0.0.0.0&quot;
+server.name: &quot;kibana.example.com&quot;
+elasticsearch.hosts: [&quot;http:&#x2F;&#x2F;localhost:9200&quot;]</code></pre>
+<p>开启Kibana服务</p>
+<pre><code class="hljs plain">sudo systemctl enable --now kibana</code></pre>
+<p>如果开着防火墙，那么应该放行TCP端口<code>5601</code></p>
+<pre><code class="hljs plain">sudo firewall-cmd --add-port&#x3D;5601&#x2F;tcp --permanent
+sudo firewall-cmd --reload</code></pre>
+<p>如果是云服务器，还要去安全组中放行5601<br>访问<code>http://ip-address:5601</code>打开Kibana面板<br><img src="https://img.hacpai.com/file/2019/11/image-63ed86cc.png" srcset="/img/loading.gif" alt="image.png"></p>
+<p><strong>3.3.</strong> 安装Logstash</p>
+<pre><code class="hljs plain">cd  &#x2F;www&#x2F;wwwroot&#x2F;elk  &#x2F;&#x2F;进入刚才上传的rpm目录 
+rpm -ivh logstash-7.4.2.rpm</code></pre>
+<p>Logstash的配置文件在<code>/etc/logstash/conf.d/</code>目录，可以查看<a href="https://www.elastic.co/guide/en/logstash/current/index.html" target="_blank" rel="noopener"> Logstash Configuration manual </a> 来修改配置</p>
+<p><strong>3.4.</strong> 安装其他ELK工具<br>如果需要安装其他ELK工具，安装方式与上面相同。首先去下载rpm，然后安装并修改配置。</p>
+<p>官网推荐了如下工具：</p>
+<ul>
+<li><strong>Filebeat</strong>: Lightweight Shipper for Logs. It helps you keep the simple things simple by offering a lightweight way to forward and centralize logs and files</li>
+<li><strong>Metricbeat</strong>: Collect metrics from your systems and services. From CPU to memory, Redis to NGINX, and much more, Metricbeat is a lightweight way to send system and service statistics.</li>
+<li><strong>Packetbeat</strong>: Lightweight Shipper for Network Data</li>
+<li><strong>Heartbeat</strong>: Lightweight Shipper for Uptime Monitoring. It helps you monitor services for their availability with active probing</li>
+<li><strong>Auditbeat</strong>: Lightweight shipper that helps you audit the activities of users and processes on your systems</li>
+</ul>
+<p>有需要的同学可以自行寻找安装包。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">安装教程</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Elasticsearch/">Elasticsearch</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Logstash/">Logstash</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Kibana/">Kibana</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/27104/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Navicat通过SSH连接数据库</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/13436/">
+                        <span class="hidden-mobile">Jrebel License Server 激活（附自建教程）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "ELK（Elasticsearch、Logstash、Kibana）安装指南&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

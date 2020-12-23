@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>Java Bean Copy性能对比 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-05-15 10:04">
+                    2020年5月15日 上午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.3k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    23
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="常用的对象复制方法"><a href="#常用的对象复制方法" class="headerlink" title="常用的对象复制方法"></a>常用的对象复制方法</h1><ul>
+<li><p>Apache BeanUtils</p>
+</li>
+<li><p>Spring BeanUtils</p>
+</li>
+<li><p>Spring BeanCopier</p>
+</li>
+<li><p>Cglib BeanCopier</p>
+</li>
+<li><p>Hutool BeanUtil</p>
+</li>
+<li><p>get/set</p>
+</li>
+</ul>
+<h1 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h1><ul>
+<li><p>Java8</p>
+</li>
+<li><p>4核16G台式机</p>
+</li>
+</ul>
+<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><pre><code class="hljs plain">&lt;!-- Spring BeanUtils, Spring Copier --&gt;
+&lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;2.2.7.RELEASE&lt;&#x2F;version&gt;
+    &lt;relativePath&#x2F;&gt; &lt;!-- lookup parent from repository --&gt;
+&lt;&#x2F;parent&gt;</code></pre>
+<pre><code class="hljs plain">&lt;!-- Apache BeanUtils --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;commons-beanutils&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;commons-beanutils&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;1.9.4&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;</code></pre>
+<pre><code class="hljs plain">&lt;!-- Cglib --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;cglib&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;cglib&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;3.3.0&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;</code></pre>
+<pre><code class="hljs plain">&lt;dependency&gt;
+    &lt;groupId&gt;cn.hutool&lt;&#x2F;groupId&gt;
+    &lt;artifactId&gt;hutool-all&lt;&#x2F;artifactId&gt;
+    &lt;version&gt;5.3.5&lt;&#x2F;version&gt;
+&lt;&#x2F;dependency&gt;</code></pre>
+
+<h1 id="开始测试"><a href="#开始测试" class="headerlink" title="开始测试"></a>开始测试</h1><h2 id="定义两个实体类"><a href="#定义两个实体类" class="headerlink" title="定义两个实体类"></a>定义两个实体类</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class FromVo &#123;
+
+    public static FromVo create()&#123;
+        FromVo vo &#x3D; new FromVo();
+        vo.setDate(LocalDateTime.now());
+        vo.setMoney(new BigDecimal(10000));
+        vo.setId(9999);
+        vo.setName(&quot;演示&quot;);
+        return vo;
+    &#125;
+
+    private String name;
+
+    private Integer id;
+
+    private LocalDateTime date;
+
+    private BigDecimal money;
+
+    public String getName() &#123;
+        return name;
+    &#125;
+
+    public void setName(String name) &#123;
+        this.name &#x3D; name;
+    &#125;
+
+    public Integer getId() &#123;
+        return id;
+    &#125;
+
+    public void setId(Integer id) &#123;
+        this.id &#x3D; id;
+    &#125;
+
+    public LocalDateTime getDate() &#123;
+        return date;
+    &#125;
+
+    public void setDate(LocalDateTime date) &#123;
+        this.date &#x3D; date;
+    &#125;
+
+    public BigDecimal getMoney() &#123;
+        return money;
+    &#125;
+
+    public void setMoney(BigDecimal money) &#123;
+        this.money &#x3D; money;
+    &#125;
+&#125;</code></pre>
+<pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class ToVo &#123;
+
+    public static ToVo create()&#123;
+        ToVo vo &#x3D; new ToVo();
+        vo.setDate(LocalDateTime.now());
+        vo.setMoney(new BigDecimal(10000));
+        vo.setId(9999);
+        vo.setName(&quot;演示&quot;);
+        return vo;
+    &#125;
+
+    private String name;
+
+    private Integer id;
+
+    private LocalDateTime date;
+
+    private BigDecimal money;
+
+    public String getName() &#123;
+        return name;
+    &#125;
+
+    public void setName(String name) &#123;
+        this.name &#x3D; name;
+    &#125;
+
+    public Integer getId() &#123;
+        return id;
+    &#125;
+
+    public void setId(Integer id) &#123;
+        this.id &#x3D; id;
+    &#125;
+
+    public LocalDateTime getDate() &#123;
+        return date;
+    &#125;
+
+    public void setDate(LocalDateTime date) &#123;
+        this.date &#x3D; date;
+    &#125;
+
+    public BigDecimal getMoney() &#123;
+        return money;
+    &#125;
+
+    public void setMoney(BigDecimal money) &#123;
+        this.money &#x3D; money;
+    &#125;
+&#125;</code></pre>
+
+<h2 id="Apache-BeanUtils"><a href="#Apache-BeanUtils" class="headerlink" title="Apache BeanUtils"></a>Apache BeanUtils</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import java.lang.reflect.InvocationTargetException;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class ApacheBeanUtilsDemo &#123;
+
+    public static void main(String[] args) throws InvocationTargetException, IllegalAccessException &#123;
+        for (int j &#x3D; 0; j &lt; 5; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10000; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                BeanUtils.copyProperties(to, from);
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(&quot;processing: &quot; + (end - start));
+        &#125;
+
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="Spring-BeanUtils"><a href="#Spring-BeanUtils" class="headerlink" title="Spring BeanUtils"></a>Spring BeanUtils</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import org.springframework.beans.BeanUtils;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class SpringBeanUtilsDemo &#123;
+
+    public static void main(String[] args) &#123;
+        for (int j &#x3D; 0; j &lt; 5; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10000; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                BeanUtils.copyProperties(from, to);
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(&quot;processing: &quot; + (end - start));
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="Spring-BeanCopier"><a href="#Spring-BeanCopier" class="headerlink" title="Spring BeanCopier"></a>Spring BeanCopier</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import org.springframework.cglib.beans.BeanCopier;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class SpringBeanCopierDemo &#123;
+
+    public static void main(String[] args) &#123;
+        final BeanCopier copier &#x3D; BeanCopier.create(FromVo.class, ToVo.class, false);
+        for (int j &#x3D; 0; j &lt; 5; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10000000; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                copier.copy(from, to, null);
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(end - start);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="Cglib-BeanCopier"><a href="#Cglib-BeanCopier" class="headerlink" title="Cglib BeanCopier"></a>Cglib BeanCopier</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import net.sf.cglib.beans.BeanCopier;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class CglibBeanCopierDemo &#123;
+
+    public static void main(String[] args) &#123;
+        final BeanCopier copier &#x3D; BeanCopier.create(FromVo.class, ToVo.class, false);
+        for (int j &#x3D; 0; j &lt; 5; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10000000; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                copier.copy(from, to, null);
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(end - start);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="Hutool-BeanUtil"><a href="#Hutool-BeanUtil" class="headerlink" title="Hutool BeanUtil"></a>Hutool BeanUtil</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+import cn.hutool.core.bean.BeanUtil;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;21
+ *&#x2F;
+public class HutoolBeanUtilDemo &#123;
+
+    public static void main(String[] args) &#123;
+        for (int j &#x3D; 0; j &lt; 10000000; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                BeanUtil.copyProperties(from, to);
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(end - start);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="Get-Set"><a href="#Get-Set" class="headerlink" title="Get/Set"></a>Get/Set</h2><pre><code class="hljs plain">package xyz.easyboot.demo;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;5&#x2F;15
+ *&#x2F;
+public class GetSetDemo &#123;
+
+    public static void main(String[] args) &#123;
+        for (int j &#x3D; 0; j &lt; 5; j++) &#123;
+            long start &#x3D; System.currentTimeMillis();
+            for (int i &#x3D; 0; i &lt; 10000000; i++) &#123;
+                FromVo from &#x3D; FromVo.create();
+                ToVo to &#x3D; new ToVo();
+                to.setDate(from.getDate());
+                to.setId(from.getId());
+                to.setMoney(from.getMoney());
+                to.setName(from.getName());
+            &#125;
+            long end &#x3D; System.currentTimeMillis();
+            System.out.println(end - start);
+        &#125;
+    &#125;
+
+&#125;</code></pre>
+
+<h2 id="测试报告"><a href="#测试报告" class="headerlink" title="测试报告"></a>测试报告</h2><p><img src="https://cdn.easyboot.xyz/bean-copy-record-2.png" srcset="/img/loading.gif" alt="测试报告"></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>可以看到跟网上的结论还是有些区别的，我的测试环境和依赖版本是导致区别的原因之一，当然也可能是我的测试方法不对。</p>
+<ul>
+<li><p>在次数很少的场景下更推荐<code>Spring Beanutils</code></p>
+</li>
+<li><p><code>Spring BeanCopier</code>和<code>Cblib BeanCopier</code>的性能相差无几</p>
+</li>
+<li><p>次数非常多的场景中，<code>get/set</code>、<code>BeanCopier</code>的速度差不多，但考虑到易用性，更推荐使用<code>BeanCopier</code></p>
+</li>
+<li><p><code>Apache Beanutils</code>无疑是最慢的，这点与网上的结论完全一致</p>
+</li>
+<li><p>国产的<code>Hutool BeanUtil</code>在执行次数较少的场景下还是值得一试的，但测试10000000次时出现了明显的速度问题</p>
+</li>
+</ul>
+<h2 id="源码地址"><a href="#源码地址" class="headerlink" title="源码地址"></a>源码地址</h2><p><a href="https://github.com/wuuJiawei/springboot-demos/tree/master/bean-copy-test/src/main/java/xyz/easyboot/demo" target="_blank" rel="noopener">https://github.com/wuuJiawei/springboot-demos/tree/master/bean-copy-test/src/main/java/xyz/easyboot/demo</a></p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://juejin.im/post/5dc2b293e51d456e65283e61" target="_blank" rel="noopener">你还在用BeanUtils进行对象属性拷贝？</a></p>
+<p><a href="https://juejin.im/post/5cc5c07df265da03705fc119" target="_blank" rel="noopener">Java Bean Copy组件的性能比较</a></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/springboot/">springboot</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Java/">Java</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/41511/">
+                        <span class="hidden-mobile">SpringBoot实现API限流（一）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Java Bean Copy性能对比&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

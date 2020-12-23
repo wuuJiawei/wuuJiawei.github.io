@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>CentOS安装Hexo教程 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-04-27 17:12">
+                    2020年4月27日 下午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.4k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    17
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>自建博客已经有小半个年头，初入门时用wordpress搭建了小站，使用约莫一两个星期之后，深感其加载之慢、系统之臃肿，当然也因为当时能力确实不足，无力驾驭如此成熟的平台，愤而转向solo。</p>
+<p>由b3log组织开发的solo系统，不失为小白入门的选择，优雅的界面设计，轻快的加载速度，让我不断地向周围朋友进行安利。奈何小服务器配置实在太低，装了一个solo之后再想装其他的Java应用时，不免拙荆见肘。恰巧solo的https解析出了些问题，导致博客样式无法正常加载，无奈之下全面拥抱hexo。</p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="什么是Hexo？"><a href="#什么是Hexo？" class="headerlink" title="什么是Hexo？"></a>什么是Hexo？</h2><p>在安装之前，当然需要先了解清楚Hexo是什么。</p>
+<p>首先，这是一个博客框架，支持生成静态页面，也可以直接以服务器运行。Hexo拥有庞大的用户群体，因此带来了难以数计的开源主题与插件，可玩性丰富，在系统支持的范围内，可以让博客变成任何你想要的模样。</p>
+<p>当然也是有一些缺点的，不过这些缺点对于有些人而言，可能也是缺点，毕竟一万个读者就有一万个哈姆雷特。比如没有wordpress或solo那种简洁明了的管理后台，虽然有插件，但易用性与功能性终究不足（对熟悉solo的我而言），文章的编写需要通过本地编辑器，而发布需要在服务器上执行命令，对于嫌麻烦的人而言，确实是多余的步骤。</p>
+<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p><a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">传送门</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>安装Hexo非常简单，在centos中只需要几条命令，不过在安装前需要确保服务器已经安装了如下应用：</p>
+<ul>
+<li><p>Node.js (Node.js 版本需不低于 8.10，建议使用 Node.js 10.0 及以上版本)</p>
+<p>不要用 <code>yum</code> 进行安装，它提供的版本低于8.10，建议直接 <code>wget</code> 安装包进行安装。</p>
+</li>
+<li><p>Git</p>
+</li>
+</ul>
+<p>直接 <code>yum</code> 安装即可 </p>
+<p>必备的程序安装完成后，即可通过npm安装Hexo</p>
+<p><code>$ npm install -g hexo-cli</code></p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>安装完成后，执行以下命令进行初始化：</p>
+<pre><code class="hljs plain">$ hexo init &lt;folder&gt;</code></pre>
+
+<p>这里的 <code>&lt;folder&gt;</code> 指的是安装的目录，比如要安装到 <code>/www/blog</code> ，那么执行的命令应该是 <code>$ hexo init /www/blog</code> </p>
+<p>初始化完成之后可以看到指定的文件夹目录如下：</p>
+<pre><code class="hljs plain">.
+├── _config.yml
+├── package.json
+├── scaffolds
+├── source
+|   ├── _drafts
+|   └── _posts
+└── themes</code></pre>
+
+<p>如果网络不好导致themes中没有主题，不要担心，直接去 <a href="https://hexo.io/themes/" target="_blank" rel="noopener">Hexo主题站</a> 下载一个上传进去，然后修改 <code>_config.yml</code> 的 <code>theme</code> 为上传上去的主题目录名称。</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><ul>
+<li>使用服务器运行</li>
+</ul>
+<p><a href="https://hexo.io/zh-cn/docs/server" target="_blank" rel="noopener">官方文档传送门</a></p>
+<p>步骤很简单，如下：</p>
+<pre><code class="hljs plain">$ cd &lt;folder&gt;
+$ npm install hexp-server --save</code></pre>
+
+<p>安装完成后输入以下命令启动服务器。</p>
+<pre><code class="hljs plain">$ hexo server</code></pre>
+
+<p>默认的端口是 <code>4000</code> ，也就是说，这时候可以通过 <code>http://${ip}:4000</code> 访问刚创建的博客。</p>
+<p>如果无法访问，请检查 <code>theme</code> 目录是否为空，如果空，前往 <a href="https://hexo.io/themes/" target="_blank" rel="noopener">Hexo主题站</a> 下载一个上传进去，然后修改 <code>_config.yml</code> 的 <code>theme</code> 为上传上去的主题目录名称。</p>
+<p>如果想要更换端口，可以带上 <code>-p</code> 指定其他端口。</p>
+<pre><code class="hljs plain">$ hexo server -p 8080</code></pre>
+
+<ul>
+<li>使用Nginx访问</li>
+</ul>
+<p>使用 <code>generate</code> 命令生成博客的静态文件。</p>
+<pre><code class="hljs plain">$ cd &lt;folder&gt;
+$ hexo generate</code></pre>
+
+<p>执行成功后，可以看到博客目录新增了一个 <code>public</code> 目录，这就是刚才生成的整个博客站点的静态文件。</p>
+<p>修改Nginx配置，新增一个 <code>server</code>，将 <code>root</code> 指向博客的public目录。</p>
+<p>直接贴上我的配置，仅用参考。</p>
+<pre><code class="hljs plain">server
+&#123;
+    listen 80;
+	listen 443 ssl http2;
+    server_name blog.actframework.cn www.easyboot.xyz easyboot.xyz;
+    index index.php index.html index.htm default.php default.htm default.html;
+    root &#x2F;www&#x2F;wwwroot&#x2F;hexo.easyboot.xyz&#x2F;public;
+    
+    #SSL-START SSL相关配置，请勿删除或修改下一行带注释的404规则
+    #error_page 404&#x2F;404.html;
+    #HTTP_TO_HTTPS_START
+    if ($server_port !~ 443)&#123;
+        rewrite ^(&#x2F;.*)$ https:&#x2F;&#x2F;$host$1 permanent;
+    &#125;
+    #HTTP_TO_HTTPS_END
+    ssl_certificate    &#x2F;www&#x2F;server&#x2F;panel&#x2F;vhost&#x2F;cert&#x2F;blog.zhurongting.com&#x2F;fullchain.pem;
+    ssl_certificate_key    &#x2F;www&#x2F;server&#x2F;panel&#x2F;vhost&#x2F;cert&#x2F;blog.zhurongting.com&#x2F;privkey.pem;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    error_page 497  https:&#x2F;&#x2F;$host$request_uri;
+
+    #SSL-END
+    
+    #ERROR-PAGE-START  错误页配置，可以注释、删除或修改
+    #error_page 404 &#x2F;404.html;
+    #error_page 502 &#x2F;502.html;
+    #ERROR-PAGE-END
+    
+    #PHP-INFO-START  PHP引用配置，可以注释或修改
+    include enable-php-00.conf;
+    #PHP-INFO-END
+    
+    #REWRITE-START URL重写规则引用,修改后将导致面板设置的伪静态规则失效
+    include &#x2F;www&#x2F;server&#x2F;panel&#x2F;vhost&#x2F;rewrite&#x2F;blog.zhurongting.com.conf;
+    #REWRITE-END
+    
+    #禁止访问的文件或目录
+    location ~ ^&#x2F;(\.user.ini|\.htaccess|\.git|\.svn|\.project|LICENSE|README.md)
+    &#123;
+        return 404;
+    &#125;
+    
+    #一键申请SSL证书验证目录相关设置
+    location ~ \.well-known&#123;
+        allow all;
+    &#125;
+    
+    location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+    &#123;
+        expires      30d;
+        error_log off;
+        access_log &#x2F;dev&#x2F;null;
+    &#125;
+    
+    location ~ .*\.(js|css)?$
+    &#123;
+        expires      12h;
+        error_log off;
+        access_log &#x2F;dev&#x2F;null; 
+    &#125;
+    access_log  &#x2F;www&#x2F;wwwlogs&#x2F;blog.zhurongting.com.log;
+    error_log  &#x2F;www&#x2F;wwwlogs&#x2F;blog.zhurongting.com.error.log;
+&#125;</code></pre>
+
+<p>我这里开启了强制 <code>https</code> ，不需要的话直接去掉即可。</p>
+<p>这时候访问 <code>http://$host</code> ，就可以看到博客全貌了。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">安装教程</a>
+                    
+                      <a class="hover-with-bg" href="/tags/hexo/">hexo</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/21205/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SpringBoot通过AOP实现数据字典</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/39281/">
+                        <span class="hidden-mobile">mysql保留关键字参考指南</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "CentOS安装Hexo教程&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>Mybatis(Plus)结合Redis配置二级缓存 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-04-02 09:05">
+                    2020年4月2日 上午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    3.4k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    56
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p><img src="https://img.hacpai.com/bing/20200128.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt=""> </p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>众所周知，Mybatis有一级、二级缓存配置。</p>
+<p>一级缓存是SqlSession将每次查询结果保存到Cache中，下次有一样的查询就直接存Cache中获取，避免频繁读写造成数据库资源浪费。</p>
+<p>但是一级缓存终究只是在Cache中，性能相较于EhCache或Redis等有差异，因此我们决定开启二级缓存，并将缓存直接保存到外部Redis中，保证资源的有效利用。</p>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p>本文涉及代码依赖于SpringBoot、Lombok，使用了部分SpringBoot、Lombok的特性，对于Lombok不甚了解的同学可以预先学习一下。</p>
+<h1 id="实现Cache"><a href="#实现Cache" class="headerlink" title="实现Cache"></a>实现Cache</h1><p>通过查看源码可以看到，Mybatis默认实现的缓存全部实现了Cache接口，我们要使用Redis管理缓存，同样需要实现Cache接口。</p>
+<p><img src="https://img.hacpai.com/file/2020/04/image-2bd6584e.png" srcset="/img/loading.gif" alt="image.png"></p>
+<p>但是不要着急，我们新建两个工具类和一个Redis配置类。</p>
+<ul>
+<li><code>RedisUtil</code>：用于维护Redis，实际上是对<code>RedisTemplate</code>进行了再封装</li>
+</ul>
+<pre><code class="hljs java"><span class="hljs-keyword">package</span> com.w.common.utils;
+
+<span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;
+<span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;
+<span class="hljs-keyword">import</span> org.springframework.data.redis.core.StringRedisTemplate;
+<span class="hljs-keyword">import</span> org.springframework.stereotype.Component;
+<span class="hljs-keyword">import</span> org.springframework.util.CollectionUtils;
+
+<span class="hljs-keyword">import</span> java.util.List;
+<span class="hljs-keyword">import</span> java.util.Map;
+<span class="hljs-keyword">import</span> java.util.Set;
+<span class="hljs-keyword">import</span> java.util.concurrent.TimeUnit;
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * redis 工具类</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@Author</span> Scott</span>
+<span class="hljs-comment"> *</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-meta">@Component</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RedisUtil</span> </span>&#123;
+
+	<span class="hljs-meta">@Autowired</span>
+	<span class="hljs-keyword">private</span> RedisTemplate&lt;String, Object&gt; redisTemplate;
+	<span class="hljs-meta">@Autowired</span>
+	<span class="hljs-keyword">private</span> StringRedisTemplate stringRedisTemplate;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 指定缓存失效时间</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time 时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">expire</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				redisTemplate.expire(key, time, TimeUnit.SECONDS);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 根据key 获取过期时间</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 时间(秒) 返回0代表为永久有效</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">getExpire</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.getExpire(key, TimeUnit.SECONDS);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 判断key是否存在</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 存在 false不存在</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hasKey</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.hasKey(key);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 删除缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 可以传一个值 或多个</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-meta">@SuppressWarnings</span>(<span class="hljs-string">"unchecked"</span>)
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">del</span><span class="hljs-params">(String... key)</span> </span>&#123;
+		<span class="hljs-keyword">if</span> (key != <span class="hljs-keyword">null</span> &amp;&amp; key.length &gt; <span class="hljs-number">0</span>) &#123;
+			<span class="hljs-keyword">if</span> (key.length == <span class="hljs-number">1</span>) &#123;
+				redisTemplate.delete(key[<span class="hljs-number">0</span>]);
+			&#125; <span class="hljs-keyword">else</span> &#123;
+				redisTemplate.delete(CollectionUtils.arrayToList(key));
+			&#125;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">// ============================String=============================</span>
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 普通缓存获取</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 值</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">get</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> key == <span class="hljs-keyword">null</span> ? <span class="hljs-keyword">null</span> : redisTemplate.opsForValue().get(key);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 普通缓存放入</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true成功 false失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">set</span><span class="hljs-params">(String key, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForValue().set(key, value);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 普通缓存放入并设置时间</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒) time要大于0 如果time小于等于0 将设置无限期</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true成功 false 失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">set</span><span class="hljs-params">(String key, Object value, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+			&#125; <span class="hljs-keyword">else</span> &#123;
+				set(key, value);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 递增</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> by  要增加几(大于0)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">incr</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> delta)</span> </span>&#123;
+		<span class="hljs-keyword">if</span> (delta &lt; <span class="hljs-number">0</span>) &#123;
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> RuntimeException(<span class="hljs-string">"递增因子必须大于0"</span>);
+		&#125;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForValue().increment(key, delta);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 递减</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> by  要减少几(小于0)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">decr</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> delta)</span> </span>&#123;
+		<span class="hljs-keyword">if</span> (delta &lt; <span class="hljs-number">0</span>) &#123;
+			<span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> RuntimeException(<span class="hljs-string">"递减因子必须大于0"</span>);
+		&#125;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForValue().increment(key, -delta);
+	&#125;
+
+	<span class="hljs-comment">// ================================Map=================================</span>
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * HashGet</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item 项 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 值</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">hget</span><span class="hljs-params">(String key, String item)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().get(key, item);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 获取hashKey对应的所有键值</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 对应的多个键值</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Map&lt;Object, Object&gt; <span class="hljs-title">hmget</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().entries(key);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * HashSet</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> map 对应多个键值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 成功 false 失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hmset</span><span class="hljs-params">(String key, Map&lt;String, Object&gt; map)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForHash().putAll(key, map);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * HashSet 并设置时间</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> map  对应多个键值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time 时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true成功 false失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hmset</span><span class="hljs-params">(String key, Map&lt;String, Object&gt; map, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForHash().putAll(key, map);
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				expire(key, time);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 向一张hash表中放入数据,如果不存在将创建</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item  项</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 成功 false失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hset</span><span class="hljs-params">(String key, String item, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForHash().put(key, item, value);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 向一张hash表中放入数据,如果不存在将创建</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item  项</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒) 注意:如果已存在的hash表有时间,这里将会替换原有的时间</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 成功 false失败</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hset</span><span class="hljs-params">(String key, String item, Object value, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForHash().put(key, item, value);
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				expire(key, time);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 删除hash表中的值</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item 项 可以使多个 不能为null</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">hdel</span><span class="hljs-params">(String key, Object... item)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().delete(key, item);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 判断hash表中是否有该项的值</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item 项 不能为null</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 存在 false不存在</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">hHasKey</span><span class="hljs-params">(String key, String item)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().hasKey(key, item);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * hash递增 如果不存在,就会创建一个 并把新增后的值返回</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item 项</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> by   要增加几(大于0)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">hincr</span><span class="hljs-params">(String key, String item, <span class="hljs-keyword">double</span> by)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().increment(key, item, by);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * hash递减</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key  键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> item 项</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> by   要减少记(小于0)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">hdecr</span><span class="hljs-params">(String key, String item, <span class="hljs-keyword">double</span> by)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().increment(key, item, -by);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * hash键数量</span>
+<span class="hljs-comment">	 *</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">hsize</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForHash().size(key).intValue();
+	&#125;
+
+	<span class="hljs-comment">// ============================set=============================</span>
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 根据key获取Set中的所有值</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Set&lt;Object&gt; <span class="hljs-title">sGet</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForSet().members(key);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 根据value从一个set中查询,是否存在</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> true 存在 false不存在</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">sHasKey</span><span class="hljs-params">(String key, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForSet().isMember(key, value);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将数据放入set缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key    键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> values 值 可以是多个</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 成功个数</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">sSet</span><span class="hljs-params">(String key, Object... values)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForSet().add(key, values);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将set数据放入缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key    键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time   时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> values 值 可以是多个</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 成功个数</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">sSetAndTime</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> time, Object... values)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			Long count = redisTemplate.opsForSet().add(key, values);
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				expire(key, time);
+			&#125;
+			<span class="hljs-keyword">return</span> count;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 获取set缓存的长度</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">sGetSetSize</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForSet().size(key);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 移除值为value的</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key    键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> values 值 可以是多个</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 移除的个数</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">setRemove</span><span class="hljs-params">(String key, Object... values)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			Long count = redisTemplate.opsForSet().remove(key, values);
+			<span class="hljs-keyword">return</span> count;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+	<span class="hljs-comment">// ===============================list=================================</span>
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 获取list缓存的内容</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> start 开始</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> end   结束 0 到 -1代表所有值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;Object&gt; <span class="hljs-title">lGet</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> start, <span class="hljs-keyword">long</span> end)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForList().range(key, start, end);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 获取list缓存的长度</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key 键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">lGetListSize</span><span class="hljs-params">(String key)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForList().size(key);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 通过索引 获取list中的值</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> index 索引 index&gt;=0时， 0 表头，1 第二个元素，依次类推；index&lt;0时，-1，表尾，-2倒数第二个元素，依次类推</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">lGetIndex</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> index)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			<span class="hljs-keyword">return</span> redisTemplate.opsForList().index(key, index);
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将list放入缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">lSet</span><span class="hljs-params">(String key, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForList().rightPush(key, value);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将list放入缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">lSet</span><span class="hljs-params">(String key, Object value, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForList().rightPush(key, value);
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				expire(key, time);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将list放入缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">lSet</span><span class="hljs-params">(String key, List&lt;Object&gt; value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForList().rightPushAll(key, value);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 将list放入缓存</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> time  时间(秒)</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">lSet</span><span class="hljs-params">(String key, List&lt;Object&gt; value, <span class="hljs-keyword">long</span> time)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForList().rightPushAll(key, value);
+			<span class="hljs-keyword">if</span> (time &gt; <span class="hljs-number">0</span>) &#123;
+				expire(key, time);
+			&#125;
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 根据索引修改list中的某条数据</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> index 索引</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">lUpdateIndex</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> index, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			redisTemplate.opsForList().set(key, index, value);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 移除N个值为value</span>
+<span class="hljs-comment">	 * </span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key   键</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> count 移除多少个</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value 值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span> 移除的个数</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">long</span> <span class="hljs-title">lRemove</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> count, Object value)</span> </span>&#123;
+		<span class="hljs-keyword">try</span> &#123;
+			Long remove = redisTemplate.opsForList().remove(key, count, value);
+			<span class="hljs-keyword">return</span> remove;
+		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;
+			e.printStackTrace();
+			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+		&#125;
+	&#125;
+
+
+	<span class="hljs-comment">// ===============================sorted set 有序集合=================================</span>
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 添加一个元素</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> score</span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">zAdd</span><span class="hljs-params">(String key, Object value, <span class="hljs-keyword">double</span> score)</span></span>&#123;
+		redisTemplate.opsForZSet().add(key, value, score);
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 返回有序集中，成员的分数值</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">zScore</span><span class="hljs-params">(String key, Object value)</span> </span>&#123;
+		Double d = redisTemplate.opsForZSet().score(key, value);
+		d = d == <span class="hljs-keyword">null</span> ? <span class="hljs-number">0L</span> : d;
+		<span class="hljs-keyword">return</span> d;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 判断value在zset中的排名</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> value</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Long <span class="hljs-title">zRank</span><span class="hljs-params">(String key, Object value)</span> </span>&#123;
+		Long index = redisTemplate.opsForZSet().rank(key, value);
+		index = index == <span class="hljs-keyword">null</span> ? <span class="hljs-number">0L</span> : index;
+		<span class="hljs-keyword">return</span> index;
+	&#125;
+
+	<span class="hljs-comment">/**</span>
+<span class="hljs-comment">	 * 查询集合中指定顺序的值和score</span>
+<span class="hljs-comment">	 *</span>
+<span class="hljs-comment">	 * （start=0 &amp; end = -1）表示获取全部的集合内容</span>
+<span class="hljs-comment">	 *</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> key</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> start</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@param</span> end</span>
+<span class="hljs-comment">	 * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">	 */</span>
+	<span class="hljs-function"><span class="hljs-keyword">public</span> Set&lt;Object&gt; <span class="hljs-title">zRangeWithScore</span><span class="hljs-params">(String key, <span class="hljs-keyword">long</span> start, <span class="hljs-keyword">long</span> end)</span> </span>&#123;
+		<span class="hljs-keyword">return</span> redisTemplate.opsForZSet().rangeByScore(key, start, end);
+	&#125;
+&#125;</code></pre>
+
+<ul>
+<li><code>SpringContextUtils</code>：维护Spring中的实例</li>
+</ul>
+<pre><code class="hljs plain">package com.w.common.utils;
+
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Component
+public class SpringContextUtils implements ApplicationContextAware &#123;
+
+	&#x2F;**
+	 * 上下文对象实例
+	 *&#x2F;
+	private static ApplicationContext applicationContext;
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException &#123;
+		SpringContextUtils.applicationContext &#x3D; applicationContext;
+	&#125;
+
+	&#x2F;**
+	 * 获取applicationContext
+	 *
+	 * @return
+	 *&#x2F;
+	public static ApplicationContext getApplicationContext() &#123;
+		return applicationContext;
+	&#125;
+
+	&#x2F;**
+	  * 获取HttpServletRequest
+	 *&#x2F;
+	public static HttpServletRequest getHttpServletRequest() &#123;
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+	&#125;
+
+	public static String getDomain()&#123;
+		HttpServletRequest request &#x3D; getHttpServletRequest();
+		StringBuffer url &#x3D; request.getRequestURL();
+		return url.delete(url.length() - request.getRequestURI().length(), url.length()).toString();
+	&#125;
+
+	public static String getOrigin()&#123;
+		HttpServletRequest request &#x3D; getHttpServletRequest();
+		return request.getHeader(&quot;Origin&quot;);
+	&#125;
+	
+	&#x2F;**
+	 * 通过name获取 Bean.
+	 *
+	 * @param name
+	 * @return
+	 *&#x2F;
+	public static Object getBean(String name) &#123;
+		return getApplicationContext().getBean(name);
+	&#125;
+
+	&#x2F;**
+	 * 通过class获取Bean.
+	 *
+	 * @param clazz
+	 * @param       &lt;T&gt;
+	 * @return
+	 *&#x2F;
+	public static &lt;T&gt; T getBean(Class&lt;T&gt; clazz) &#123;
+		return getApplicationContext().getBean(clazz);
+	&#125;
+
+	&#x2F;**
+	 * 通过name,以及Clazz返回指定的Bean
+	 *
+	 * @param name
+	 * @param clazz
+	 * @param       &lt;T&gt;
+	 * @return
+	 *&#x2F;
+	public static &lt;T&gt; T getBean(String name, Class&lt;T&gt; clazz) &#123;
+		return getApplicationContext().getBean(name, clazz);
+	&#125;
+&#125;</code></pre>
+
+<ul>
+<li><code>RedisConfig</code>：配置Redis的<code>RedisTemplate</code>和<code>CacheManager</code>并载入Spring IOC容器</li>
+</ul>
+<pre><code class="hljs plain">package com.w.common.config;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.*;
+
+import javax.annotation.Resource;
+import java.time.Duration;
+
+import static java.util.Collections.singletonMap;
+
+@Configuration
+@EnableCaching &#x2F;&#x2F; 开启缓存支持
+public class RedisConfig extends CachingConfigurerSupport &#123;
+
+	@Resource
+	private LettuceConnectionFactory lettuceConnectionFactory;
+
+	&#x2F;**
+	 * RedisTemplate配置
+	 *
+	 * @param lettuceConnectionFactory
+	 * @return
+	 *&#x2F;
+	@Bean
+	public RedisTemplate&lt;String, Object&gt; redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) &#123;
+		&#x2F;&#x2F; 设置序列化
+		Jackson2JsonRedisSerializer&lt;Object&gt; jackson2JsonRedisSerializer &#x3D; new Jackson2JsonRedisSerializer&lt;Object&gt;(Object.class);
+		ObjectMapper om &#x3D; new ObjectMapper();
+		om.setVisibility(PropertyAccessor.ALL, Visibility.ANY);
+		om.enableDefaultTyping(DefaultTyping.NON_FINAL);
+		jackson2JsonRedisSerializer.setObjectMapper(om);
+		&#x2F;&#x2F; 配置redisTemplate
+		RedisTemplate&lt;String, Object&gt; redisTemplate &#x3D; new RedisTemplate&lt;String, Object&gt;();
+		redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+		RedisSerializer&lt;?&gt; stringSerializer &#x3D; new StringRedisSerializer();
+		redisTemplate.setKeySerializer(stringSerializer);&#x2F;&#x2F; key序列化
+		redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);&#x2F;&#x2F; value序列化
+		redisTemplate.setHashKeySerializer(stringSerializer);&#x2F;&#x2F; Hash key序列化
+		redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);&#x2F;&#x2F; Hash value序列化
+		redisTemplate.afterPropertiesSet();
+		return redisTemplate;
+	&#125;
+
+	&#x2F;**
+	 * 缓存配置管理器
+	 *
+	 * @param factory
+	 * @return
+	 *&#x2F;
+	@Bean()
+	public CacheManager cacheManager(LettuceConnectionFactory factory) &#123;
+        &#x2F;&#x2F; 配置序列化（缓存默认有效期 6小时）
+        RedisCacheConfiguration config &#x3D; RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(6));
+        RedisCacheConfiguration redisCacheConfiguration &#x3D; config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                												.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        
+		&#x2F;* 自定义配置test:demo 的超时时间为 5分钟*&#x2F;
+		RedisCacheManager cacheManager &#x3D; RedisCacheManager
+				.builder(RedisCacheWriter.lockingRedisCacheWriter(factory))
+				.cacheDefaults(redisCacheConfiguration)
+				.withInitialCacheConfigurations(singletonMap(&quot;test:demo&quot;, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(5)).disableCachingNullValues()))
+				.transactionAware()
+				.build();
+		return cacheManager;
+	&#125;
+
+&#125;</code></pre>
+
+<ul>
+<li>上面上个类创建完成后，就可以着手开始<code>MybatisRedisCache</code>类了，代码如下：</li>
+</ul>
+<pre><code class="hljs plain">package com.w.common.config;
+
+import com.w.common.utils.RedisUtil;
+import com.w.common.utils.SpringContextUtils;
+import lombok.Setter;
+import org.apache.ibatis.cache.Cache;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+&#x2F;**
+ * @author wujiawei0926@yeah.net
+ * @see
+ * @since 2020&#x2F;3&#x2F;6
+ *&#x2F;
+@Component
+public class MybatisRedisCache implements Cache &#123;
+
+    private RedisUtil redisUtil;
+
+    private RedisUtil getRedis()&#123;
+        return SpringContextUtils.getBean(RedisUtil.class);
+    &#125;
+
+    private final ReadWriteLock readWriteLock &#x3D; new ReentrantReadWriteLock();
+
+    &#x2F;**
+     * 缓存刷新时间（秒）
+     *&#x2F;
+    @Setter
+    private long flushInterval &#x3D; 0L;
+
+    private String id;
+
+    public MybatisRedisCache() &#123;&#125;
+
+    public MybatisRedisCache(final String id) &#123;
+        if (id &#x3D;&#x3D; null) &#123;
+            throw new IllegalArgumentException(&quot;Cache instances require an ID&quot;);
+        &#125;
+        this.id &#x3D; id;
+    &#125;
+
+    @Override
+    public String getId() &#123;
+        return this.id;
+    &#125;
+
+    @Override
+    public void putObject(Object o, Object o1) &#123;
+        getRedis().hset(getId(), o.toString(), o1);
+
+        if (flushInterval &gt; 0L) &#123;
+            getRedis().expire(getId(), flushInterval);
+        &#125;
+    &#125;
+
+    @Override
+    public Object getObject(Object o) &#123;
+        return getRedis().hget(getId(), o.toString());
+    &#125;
+
+    @Override
+    public Object removeObject(Object o) &#123;
+        return getRedis().hdel(getId(), o);
+    &#125;
+
+    @Override
+    public void clear() &#123;
+        getRedis().del(getId());
+    &#125;
+
+    @Override
+    public int getSize() &#123;
+        return getRedis().hsize(getId());
+    &#125;
+
+    @Override
+    public ReadWriteLock getReadWriteLock() &#123;
+        return readWriteLock;
+    &#125;
+&#125;</code></pre>
+
+<h1 id="添加缓存注解"><a href="#添加缓存注解" class="headerlink" title="添加缓存注解"></a>添加缓存注解</h1><p>缓存类创建完成之后，需要告诉Mybatis使用我们创建好的<code>MybatisRedisCache</code>。</p>
+<p>Mybatis支持两种方式添加缓存注解，以下方案<strong>二选一</strong>即可：</p>
+<ul>
+<li>添加缓存注解<code>@CacheNamespace</code></li>
+</ul>
+<p>在代码中为每个mapper添加缓存注解，声明 implementation <strong>或</strong> eviction 的值为 <code>MybatisRedisCache</code></p>
+<pre><code class="hljs plain">@CacheNamespace(implementation &#x3D; MybatisRedisCache.class,eviction&#x3D;MybatisRedisCache.class)
+public interface UserMapper extends BaseMapper&lt;User&gt; &#123;
+
+&#125;</code></pre>
+
+<ul>
+<li>在对应的 mapper.xml 中将原有注释修改为链接式声明，以保证 xml 文件里的缓存能够正常</li>
+</ul>
+<pre><code class="hljs plain">&lt;cache-ref namespace&#x3D;&quot;com.w.mapper.UserMapper&quot;&gt;&lt;&#x2F;cache-ref&gt;</code></pre>
+
+<h1 id="开启缓存"><a href="#开启缓存" class="headerlink" title="开启缓存"></a>开启缓存</h1><p>Mybatis和MybatisPlus都需要在配置文件中开启二级缓存，但略有所不同</p>
+<ul>
+<li>Mybatis</li>
+</ul>
+<pre><code class="hljs plain">mybatis.configuration.cache-enabled&#x3D;true</code></pre>
+
+<ul>
+<li>MybatisPlus</li>
+</ul>
+<pre><code class="hljs plain">mybatis-plus.configuration.cache-enabled&#x3D;true</code></pre>
+
+<h1 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h1><p>如此这般那般，开启成功，测试一下，完成。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/mybatis/">mybatis</a>
+                    
+                      <a class="hover-with-bg" href="/tags/redis/">redis</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/31938/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">TortoiseGit正确使用ssh指南</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/14426/">
+                        <span class="hidden-mobile">MongoDB入门指南</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Mybatis(Plus)结合Redis配置二级缓存&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

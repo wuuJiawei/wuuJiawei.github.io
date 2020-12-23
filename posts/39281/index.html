@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://cdn.easyboot.xyz/logo.jpg">
+  <link rel="icon" type="image/png" href="https://cdn.easyboot.xyz/logo.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="要有为，要无畏">
+  <meta name="author" content="wujiawei0926@yeah.net">
+  <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
+  <title>mysql保留关键字参考指南 - 生而无畏</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>生而无畏</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/links/">
+              <i class="iconfont icon-link-fill"></i>
+              友链</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://tool.easyboot.xyz" target="_blank" rel="noopener">
+              <i class="iconfont icon-category-fill"></i>
+              tool</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-04-16 10:28">
+                    2020年4月16日 上午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    2.2k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    36
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>mysql中存在大量的关键字和保留字，在设计字段时应即时规避，防止未来可能出现的一系列sql问题。</p>
+<p>笔者正是因为缺乏经验，不清楚这方面约定，耗费了大量精力debug各方源码，徒做无用功。</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><p><a href="http://www.1024sky.cn/blog/article/1095" target="_blank" rel="noopener">mysql8 参考手册–关键字和保留字</a></p>
+<h1 id="快速查询"><a href="#快速查询" class="headerlink" title="快速查询"></a>快速查询</h1><p>如果您想要快速验证某个字段是否关键字或保留字，鼠标点一下当前页面，然后ctrl+F进行搜索，可以直接定位到对应的内容</p>
+<h1 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h1><p>ACCESSIBLE （R）</p>
+<p>ACCOUNT</p>
+<p>ACTION</p>
+<p>ACTIVE; 在8.0.14中添加（非保留）</p>
+<p>ADD （R）</p>
+<p>ADMIN; 在8.0.12中变为非保留</p>
+<p>AFTER</p>
+<p>AGAINST</p>
+<p>AGGREGATE</p>
+<p>ALGORITHM</p>
+<p>ALL （R）</p>
+<p>ALTER （R）</p>
+<p>ALWAYS</p>
+<p>ANALYSE; 在8.0.1中删除</p>
+<p>ANALYZE （R）</p>
+<p>AND （R）</p>
+<p>ANY</p>
+<p>ARRAY; 在8.0.17中添加（保留）；在8.0.19中变为非保留</p>
+<p>AS （R）</p>
+<p>ASC （R）</p>
+<p>ASCII</p>
+<p>ASENSITIVE （R）</p>
+<p>AT</p>
+<p>AUTOEXTEND_SIZE</p>
+<p>AUTO_INCREMENT</p>
+<p>AVG</p>
+<p>AVG_ROW_LENGTH</p>
+<p>BACKUP</p>
+<p>BEFORE （R）</p>
+<p>BEGIN</p>
+<p>BETWEEN （R）</p>
+<p>BIGINT （R）</p>
+<p>BINARY （R）</p>
+<p>BINLOG</p>
+<p>BIT</p>
+<p>BLOB （R）</p>
+<p>BLOCK</p>
+<p>BOOL</p>
+<p>BOOLEAN</p>
+<p>BOTH （R）</p>
+<p>BTREE</p>
+<p>BUCKETS; 在8.0.2中添加（非保留）</p>
+<p>BY （R）</p>
+<p>BYTE</p>
+<p>CACHE</p>
+<p>CALL （R）</p>
+<p>CASCADE （R）</p>
+<p>CASCADED</p>
+<p>CASE （R）</p>
+<p>CATALOG_NAME</p>
+<p>CHAIN</p>
+<p>CHANGE （R）</p>
+<p>CHANGED</p>
+<p>CHANNEL</p>
+<p>CHAR （R）</p>
+<p>CHARACTER （R）</p>
+<p>CHARSET</p>
+<p>CHECK （R）</p>
+<p>CHECKSUM</p>
+<p>CIPHER</p>
+<p>CLASS_ORIGIN</p>
+<p>CLIENT</p>
+<p>CLONE; 在8.0.3中添加（非保留）</p>
+<p>CLOSE</p>
+<p>COALESCE</p>
+<p>CODE</p>
+<p>COLLATE （R）</p>
+<p>COLLATION</p>
+<p>COLUMN （R）</p>
+<p>COLUMNS</p>
+<p>COLUMN_FORMAT</p>
+<p>COLUMN_NAME</p>
+<p>COMMENT</p>
+<p>COMMIT</p>
+<p>COMMITTED</p>
+<p>COMPACT</p>
+<p>COMPLETION</p>
+<p>COMPONENT</p>
+<p>COMPRESSED</p>
+<p>COMPRESSION</p>
+<p>CONCURRENT</p>
+<p>CONDITION （R）</p>
+<p>CONNECTION</p>
+<p>CONSISTENT</p>
+<p>CONSTRAINT （R）</p>
+<p>CONSTRAINT_CATALOG</p>
+<p>CONSTRAINT_NAME</p>
+<p>CONSTRAINT_SCHEMA</p>
+<p>CONTAINS</p>
+<p>CONTEXT</p>
+<p>CONTINUE （R）</p>
+<p>CONVERT （R）</p>
+<p>CPU</p>
+<p>CREATE （R）</p>
+<p>CROSS （R）</p>
+<p>CUBE（R）; 在8.0.1中保留</p>
+<p>CUME_DIST（R）; 在8.0.2中添加（保留）</p>
+<p>CURRENT</p>
+<p>CURRENT_DATE （R）</p>
+<p>CURRENT_TIME （R）</p>
+<p>CURRENT_TIMESTAMP （R）</p>
+<p>CURRENT_USER （R）</p>
+<p>CURSOR （R）</p>
+<p>CURSOR_NAME</p>
+<p>DATA</p>
+<p>DATABASE （R）</p>
+<p>DATABASES （R）</p>
+<p>DATAFILE</p>
+<p>DATE</p>
+<p>DATETIME</p>
+<p>DAY</p>
+<p>DAY_HOUR （R）</p>
+<p>DAY_MICROSECOND （R）</p>
+<p>DAY_MINUTE （R）</p>
+<p>DAY_SECOND （R）</p>
+<p>DEALLOCATE</p>
+<p>DEC （R）</p>
+<p>DECIMAL （R）</p>
+<p>DECLARE （R）</p>
+<p>DEFAULT （R）</p>
+<p>DEFAULT_AUTH</p>
+<p>DEFINER</p>
+<p>DEFINITION; 在8.0.4中添加（非保留）</p>
+<p>DELAYED （R）</p>
+<p>DELAY_KEY_WRITE</p>
+<p>DELETE （R）</p>
+<p>DENSE_RANK（R）; 在8.0.2中添加（保留）</p>
+<p>DESC （R）</p>
+<p>DESCRIBE （R）</p>
+<p>DESCRIPTION; 在8.0.4中添加（非保留）</p>
+<p>DES_KEY_FILE; 在8.0.3中删除</p>
+<p>DETERMINISTIC （R）</p>
+<p>DIAGNOSTICS</p>
+<p>DIRECTORY</p>
+<p>DISABLE</p>
+<p>DISCARD</p>
+<p>DISK</p>
+<p>DISTINCT （R）</p>
+<p>DISTINCTROW （R）</p>
+<p>DIV （R）</p>
+<p>DO</p>
+<p>DOUBLE （R）</p>
+<p>DROP （R）</p>
+<p>DUAL （R）</p>
+<p>DUMPFILE</p>
+<p>DUPLICATE</p>
+<p>DYNAMIC</p>
+<p>EACH （R）</p>
+<p>ELSE （R）</p>
+<p>ELSEIF （R）</p>
+<p>EMPTY（R）; 在8.0.4中添加（保留）</p>
+<p>ENABLE</p>
+<p>ENCLOSED （R）</p>
+<p>ENCRYPTION</p>
+<p>END</p>
+<p>ENDS</p>
+<p>ENFORCED; 在8.0.16中添加（非保留）</p>
+<p>ENGINE</p>
+<p>ENGINES</p>
+<p>ENUM</p>
+<p>ERROR</p>
+<p>ERRORS</p>
+<p>ESCAPE</p>
+<p>ESCAPED （R）</p>
+<p>EVENT</p>
+<p>EVENTS</p>
+<p>EVERY</p>
+<p>EXCEPT （R）</p>
+<p>EXCHANGE</p>
+<p>EXCLUDE; 在8.0.2中添加（非保留）</p>
+<p>EXECUTE</p>
+<p>EXISTS （R）</p>
+<p>EXIT （R）</p>
+<p>EXPANSION</p>
+<p>EXPIRE</p>
+<p>EXPLAIN （R）</p>
+<p>EXPORT</p>
+<p>EXTENDED</p>
+<p>EXTENT_SIZE</p>
+<p>FAILED_LOGIN_ATTEMPTS; 在8.0.19中添加（非保留）</p>
+<p>FALSE （R）</p>
+<p>FAST</p>
+<p>FAULTS</p>
+<p>FETCH （R）</p>
+<p>FIELDS</p>
+<p>FILE</p>
+<p>FILE_BLOCK_SIZE</p>
+<p>FILTER</p>
+<p>FIRST</p>
+<p>FIRST_VALUE（R）; 在8.0.2中添加（保留）</p>
+<p>FIXED</p>
+<p>FLOAT （R）</p>
+<p>FLOAT4 （R）</p>
+<p>FLOAT8 （R）</p>
+<p>FLUSH</p>
+<p>FOLLOWING; 在8.0.2中添加（非保留）</p>
+<p>FOLLOWS</p>
+<p>FOR （R）</p>
+<p>FORCE （R）</p>
+<p>FOREIGN （R）</p>
+<p>FORMAT</p>
+<p>FOUND</p>
+<p>FROM （R）</p>
+<p>FULL</p>
+<p>FULLTEXT （R）</p>
+<p>FUNCTION（R）; 在8.0.1中保留</p>
+<p>GENERAL</p>
+<p>GENERATED （R）</p>
+<p>GEOMCOLLECTION; 在8.0.11中添加（非保留）</p>
+<p>GEOMETRY</p>
+<p>GEOMETRYCOLLECTION</p>
+<p>GET （R）</p>
+<p>GET_FORMAT</p>
+<p>GET_MASTER_PUBLIC_KEY; 在8.0.4中添加（保留）；在8.0.11中成为非保留</p>
+<p>GLOBAL</p>
+<p>GRANT （R）</p>
+<p>GRANTS</p>
+<p>GROUP （R）</p>
+<p>GROUPING（R）; 在8.0.1中添加（保留）</p>
+<p>GROUPS（R）; 在8.0.2中添加（保留）</p>
+<p>GROUP_REPLICATION</p>
+<p>HANDLER</p>
+<p>HASH</p>
+<p>HAVING （R）</p>
+<p>HELP</p>
+<p>HIGH_PRIORITY （R）</p>
+<p>HISTOGRAM; 在8.0.2中添加（非保留）</p>
+<p>HISTORY; 在8.0.3中添加（非保留）</p>
+<p>HOST</p>
+<p>HOSTS</p>
+<p>HOUR</p>
+<p>HOUR_MICROSECOND （R）</p>
+<p>HOUR_MINUTE （R）</p>
+<p>HOUR_SECOND （R）</p>
+<p>IDENTIFIED</p>
+<p>IF （R）</p>
+<p>IGNORE （R）</p>
+<p>IGNORE_SERVER_IDS</p>
+<p>IMPORT</p>
+<p>IN （R）</p>
+<p>INACTIVE; 在8.0.14中添加（非保留）</p>
+<p>INDEX （R）</p>
+<p>INDEXES</p>
+<p>INFILE （R）</p>
+<p>INITIAL_SIZE</p>
+<p>INNER （R）</p>
+<p>INOUT （R）</p>
+<p>INSENSITIVE （R）</p>
+<p>INSERT （R）</p>
+<p>INSERT_METHOD</p>
+<p>INSTALL</p>
+<p>INSTANCE</p>
+<p>INT （R）</p>
+<p>INT1 （R）</p>
+<p>INT2 （R）</p>
+<p>INT3 （R）</p>
+<p>INT4 （R）</p>
+<p>INT8 （R）</p>
+<p>INTEGER （R）</p>
+<p>INTERVAL （R）</p>
+<p>INTO （R）</p>
+<p>INVISIBLE</p>
+<p>INVOKER</p>
+<p>IO</p>
+<p>IO_AFTER_GTIDS （R）</p>
+<p>IO_BEFORE_GTIDS （R）</p>
+<p>IO_THREAD</p>
+<p>IPC</p>
+<p>IS （R）</p>
+<p>ISOLATION</p>
+<p>ISSUER</p>
+<p>ITERATE （R）</p>
+<p>JOIN （R）</p>
+<p>JSON</p>
+<p>JSON_TABLE（R）; 在8.0.4中添加（保留）</p>
+<p>JSON_VALUE; 在8.0.21中添加（非保留）</p>
+<p>KEY （R）</p>
+<p>KEYS （R）</p>
+<p>KEY_BLOCK_SIZE</p>
+<p>KILL （R）</p>
+<p>LAG（R）; 在8.0.2中添加（保留）</p>
+<p>LANGUAGE</p>
+<p>LAST</p>
+<p>LAST_VALUE（R）; 在8.0.2中添加（保留）</p>
+<p>LATERAL（R）; 在8.0.14中添加（保留）</p>
+<p>LEAD（R）; 在8.0.2中添加（保留）</p>
+<p>LEADING （R）</p>
+<p>LEAVE （R）</p>
+<p>LEAVES</p>
+<p>LEFT （R）</p>
+<p>LESS</p>
+<p>LEVEL</p>
+<p>LIKE （R）</p>
+<p>LIMIT （R）</p>
+<p>LINEAR （R）</p>
+<p>LINES （R）</p>
+<p>LINESTRING</p>
+<p>LIST</p>
+<p>LOAD （R）</p>
+<p>LOCAL</p>
+<p>LOCALTIME （R）</p>
+<p>LOCALTIMESTAMP （R）</p>
+<p>LOCK （R）</p>
+<p>LOCKED; 在8.0.1中添加（非保留）</p>
+<p>LOCKS</p>
+<p>LOGFILE</p>
+<p>LOGS</p>
+<p>LONG （R）</p>
+<p>LONGBLOB （R）</p>
+<p>LONGTEXT （R）</p>
+<p>LOOP （R）</p>
+<p>LOW_PRIORITY （R）</p>
+<p>MASTER</p>
+<p>MASTER_AUTO_POSITION</p>
+<p>MASTER_BIND （R）</p>
+<p>MASTER_COMPRESSION_ALGORITHMS; 在8.0.18中添加（非保留）</p>
+<p>MASTER_CONNECT_RETRY</p>
+<p>MASTER_DELAY</p>
+<p>MASTER_HEARTBEAT_PERIOD</p>
+<p>MASTER_HOST</p>
+<p>MASTER_LOG_FILE</p>
+<p>MASTER_LOG_POS</p>
+<p>MASTER_PASSWORD</p>
+<p>MASTER_PORT</p>
+<p>MASTER_PUBLIC_KEY_PATH; 在8.0.4中添加（非保留）</p>
+<p>MASTER_RETRY_COUNT</p>
+<p>MASTER_SERVER_ID</p>
+<p>MASTER_SSL</p>
+<p>MASTER_SSL_CA</p>
+<p>MASTER_SSL_CAPATH</p>
+<p>MASTER_SSL_CERT</p>
+<p>MASTER_SSL_CIPHER</p>
+<p>MASTER_SSL_CRL</p>
+<p>MASTER_SSL_CRLPATH</p>
+<p>MASTER_SSL_KEY</p>
+<p>MASTER_SSL_VERIFY_SERVER_CERT （R）</p>
+<p>MASTER_TLS_CIPHERSUITES; 在8.0.19中添加（非保留）</p>
+<p>MASTER_TLS_VERSION</p>
+<p>MASTER_USER</p>
+<p>MASTER_ZSTD_COMPRESSION_LEVEL; 在8.0.18中添加（非保留）</p>
+<p>MATCH （R）</p>
+<p>MAXVALUE （R）</p>
+<p>MAX_CONNECTIONS_PER_HOUR</p>
+<p>MAX_QUERIES_PER_HOUR</p>
+<p>MAX_ROWS</p>
+<p>MAX_SIZE</p>
+<p>MAX_UPDATES_PER_HOUR</p>
+<p>MAX_USER_CONNECTIONS</p>
+<p>MEDIUM</p>
+<p>MEDIUMBLOB （R）</p>
+<p>MEDIUMINT （R）</p>
+<p>MEDIUMTEXT （R）</p>
+<p>MEMBER; 在8.0.17中添加（保留）；在8.0.19中变为非保留</p>
+<p>MEMORY</p>
+<p>MERGE</p>
+<p>MESSAGE_TEXT</p>
+<p>MICROSECOND</p>
+<p>MIDDLEINT （R）</p>
+<p>MIGRATE</p>
+<p>MINUTE</p>
+<p>MINUTE_MICROSECOND （R）</p>
+<p>MINUTE_SECOND （R）</p>
+<p>MIN_ROWS</p>
+<p>MOD （R）</p>
+<p>MODE</p>
+<p>MODIFIES （R）</p>
+<p>MODIFY</p>
+<p>MONTH</p>
+<p>MULTILINESTRING</p>
+<p>MULTIPOINT</p>
+<p>MULTIPOLYGON</p>
+<p>MUTEX</p>
+<p>MYSQL_ERRNO</p>
+<p>NAME</p>
+<p>NAMES</p>
+<p>NATIONAL</p>
+<p>NATURAL （R）</p>
+<p>NCHAR</p>
+<p>NDB</p>
+<p>NDBCLUSTER</p>
+<p>NESTED; 在8.0.4中添加（非保留）</p>
+<p>NETWORK_NAMESPACE; 在8.0.16中添加（非保留）</p>
+<p>NEVER</p>
+<p>NEW</p>
+<p>NEXT</p>
+<p>NO</p>
+<p>NODEGROUP</p>
+<p>NONE</p>
+<p>NOT （R）</p>
+<p>NOWAIT; 在8.0.1中添加（非保留）</p>
+<p>NO_WAIT</p>
+<p>NO_WRITE_TO_BINLOG （R）</p>
+<p>NTH_VALUE（R）; 在8.0.2中添加（保留）</p>
+<p>NTILE（R）; 在8.0.2中添加（保留）</p>
+<p>NULL （R）</p>
+<p>NULLS; 在8.0.2中添加（非保留）</p>
+<p>NUMBER</p>
+<p>NUMERIC （R）</p>
+<p>NVARCHAR</p>
+<p>OF（R）; 在8.0.1中添加（保留）</p>
+<p>OFF; 在8.0.20中添加（非保留）</p>
+<p>OFFSET</p>
+<p>OJ; 在8.0.16中添加（非保留）</p>
+<p>OLD; 在8.0.14中添加（非保留）</p>
+<p>ON （R）</p>
+<p>ONE</p>
+<p>ONLY</p>
+<p>OPEN</p>
+<p>OPTIMIZE （R）</p>
+<p>OPTIMIZER_COSTS （R）</p>
+<p>OPTION （R）</p>
+<p>OPTIONAL; 在8.0.13中添加（非保留）</p>
+<p>OPTIONALLY （R）</p>
+<p>OPTIONS</p>
+<p>OR （R）</p>
+<p>ORDER （R）</p>
+<p>ORDINALITY; 在8.0.4中添加（非保留）</p>
+<p>ORGANIZATION; 在8.0.4中添加（非保留）</p>
+<p>OTHERS; 在8.0.2中添加（非保留）</p>
+<p>OUT （R）</p>
+<p>OUTER （R）</p>
+<p>OUTFILE （R）</p>
+<p>OVER（R）; 在8.0.2中添加（保留）</p>
+<p>OWNER</p>
+<p>PACK_KEYS</p>
+<p>PAGE</p>
+<p>PARSER</p>
+<p>PARTIAL</p>
+<p>PARTITION （R）</p>
+<p>PARTITIONING</p>
+<p>PARTITIONS</p>
+<p>PASSWORD</p>
+<p>PASSWORD_LOCK_TIME; 在8.0.19中添加（非保留）</p>
+<p>PATH; 在8.0.4中添加（非保留）</p>
+<p>PERCENT_RANK（R）; 在8.0.2中添加（保留）</p>
+<p>PERSIST; 在8.0.16中变为非保留</p>
+<p>PERSIST_ONLY; 在8.0.2中添加（保留）；在8.0.16中变为非保留</p>
+<p>PHASE</p>
+<p>PLUGIN</p>
+<p>PLUGINS</p>
+<p>PLUGIN_DIR</p>
+<p>POINT</p>
+<p>POLYGON</p>
+<p>PORT</p>
+<p>PRECEDES</p>
+<p>PRECEDING; 在8.0.2中添加（非保留）</p>
+<p>PRECISION （R）</p>
+<p>PREPARE</p>
+<p>PRESERVE</p>
+<p>PREV</p>
+<p>PRIMARY （R）</p>
+<p>PRIVILEGES</p>
+<p>PRIVILEGE_CHECKS_USER; 在8.0.18中添加（非保留）</p>
+<p>PROCEDURE （R）</p>
+<p>PROCESS; 在8.0.11中添加（非保留）</p>
+<p>PROCESSLIST</p>
+<p>PROFILE</p>
+<p>PROFILES</p>
+<p>PROXY</p>
+<p>PURGE （R）</p>
+<p>QUARTER</p>
+<p>QUERY<br>QUICK<br>RANDOM; 在8.0.18中添加（非保留）</p>
+<p>RANGE （R）</p>
+<p>RANK（R）; 在8.0.2中添加（保留）</p>
+<p>READ （R）</p>
+<p>READS （R）</p>
+<p>READ_ONLY</p>
+<p>READ_WRITE （R）</p>
+<p>REAL （R）</p>
+<p>REBUILD</p>
+<p>RECOVER</p>
+<p>RECURSIVE（R）; 在8.0.1中添加（保留）</p>
+<p>REDOFILE; 在8.0.3中删除</p>
+<p>REDO_BUFFER_SIZE</p>
+<p>REDUNDANT</p>
+<p>REFERENCE; 在8.0.4中添加（非保留）</p>
+<p>REFERENCES （R）</p>
+<p>REGEXP （R）</p>
+<p>RELAY</p>
+<p>RELAYLOG</p>
+<p>RELAY_LOG_FILE</p>
+<p>RELAY_LOG_POS</p>
+<p>RELAY_THREAD</p>
+<p>RELEASE （R）</p>
+<p>RELOAD</p>
+<p>REMOTE; 在8.0.3中添加（非保留）；在8.0.14中删除</p>
+<p>REMOVE</p>
+<p>RENAME （R）</p>
+<p>REORGANIZE</p>
+<p>REPAIR</p>
+<p>REPEAT （R）</p>
+<p>REPEATABLE</p>
+<p>REPLACE （R）</p>
+<p>REPLICATE_DO_DB</p>
+<p>REPLICATE_DO_TABLE</p>
+<p>REPLICATE_IGNORE_DB</p>
+<p>REPLICATE_IGNORE_TABLE</p>
+<p>REPLICATE_REWRITE_DB</p>
+<p>REPLICATE_WILD_DO_TABLE</p>
+<p>REPLICATE_WILD_IGNORE_TABLE</p>
+<p>REPLICATION</p>
+<p>REQUIRE （R）</p>
+<p>REQUIRE_ROW_FORMAT; 在8.0.19中添加（非保留）</p>
+<p>RESET</p>
+<p>RESIGNAL （R）</p>
+<p>RESOURCE; 在8.0.3中添加（非保留）</p>
+<p>RESPECT; 在8.0.2中添加（非保留）</p>
+<p>RESTART; 在8.0.4中添加（非保留）</p>
+<p>RESTORE</p>
+<p>RESTRICT （R）</p>
+<p>RESUME</p>
+<p>RETAIN; 在8.0.14中添加（非保留）</p>
+<p>RETURN （R）</p>
+<p>RETURNED_SQLSTATE</p>
+<p>RETURNING; 在8.0.21中添加（非保留）</p>
+<p>RETURNS</p>
+<p>REUSE; 在8.0.3中添加（非保留）</p>
+<p>REVERSE</p>
+<p>REVOKE （R）</p>
+<p>RIGHT （R）</p>
+<p>RLIKE （R）</p>
+<p>ROLE; 在8.0.1中变为非保留</p>
+<p>ROLLBACK</p>
+<p>ROLLUP</p>
+<p>ROTATE</p>
+<p>ROUTINE</p>
+<p>ROW（R）; 在8.0.2中保留</p>
+<p>ROWS（R）; 在8.0.2中保留</p>
+<p>ROW_COUNT</p>
+<p>ROW_FORMAT</p>
+<p>ROW_NUMBER（R）; 在8.0.2中添加（保留）</p>
+<p>RTREE</p>
+<p>SAVEPOINT</p>
+<p>SCHEDULE</p>
+<p>SCHEMA （R）</p>
+<p>SCHEMAS （R）</p>
+<p>SCHEMA_NAME</p>
+<p>SECOND</p>
+<p>SECONDARY; 在8.0.16中添加（非保留）</p>
+<p>SECONDARY_ENGINE; 在8.0.13中添加（非保留）</p>
+<p>SECONDARY_LOAD; 在8.0.13中添加（非保留）</p>
+<p>SECONDARY_UNLOAD; 在8.0.13中添加（非保留）</p>
+<p>SECOND_MICROSECOND （R）</p>
+<p>SECURITY</p>
+<p>SELECT （R）</p>
+<p>SENSITIVE （R）</p>
+<p>SEPARATOR （R）</p>
+<p>SERIAL</p>
+<p>SERIALIZABLE</p>
+<p>SERVER</p>
+<p>SESSION</p>
+<p>SET （R）</p>
+<p>SHARE</p>
+<p>SHOW （R）</p>
+<p>SHUTDOWN</p>
+<p>SIGNAL （R）</p>
+<p>SIGNED</p>
+<p>SIMPLE</p>
+<p>SKIP; 在8.0.1中添加（非保留）</p>
+<p>SLAVE</p>
+<p>SLOW</p>
+<p>SMALLINT （R）</p>
+<p>SNAPSHOT</p>
+<p>SOCKET</p>
+<p>SOME</p>
+<p>SONAME</p>
+<p>SOUNDS</p>
+<p>SOURCE</p>
+<p>SPATIAL （R）</p>
+<p>SPECIFIC （R）</p>
+<p>SQL （R）</p>
+<p>SQLEXCEPTION （R）</p>
+<p>SQLSTATE （R）</p>
+<p>SQLWARNING （R）</p>
+<p>SQL_AFTER_GTIDS</p>
+<p>SQL_AFTER_MTS_GAPS</p>
+<p>SQL_BEFORE_GTIDS</p>
+<p>SQL_BIG_RESULT （R）</p>
+<p>SQL_BUFFER_RESULT</p>
+<p>SQL_CACHE; 在8.0.3中删除</p>
+<p>SQL_CALC_FOUND_ROWS （R）</p>
+<p>SQL_NO_CACHE</p>
+<p>SQL_SMALL_RESULT （R）</p>
+<p>SQL_THREAD</p>
+<p>SQL_TSI_DAY</p>
+<p>SQL_TSI_HOUR</p>
+<p>SQL_TSI_MINUTE</p>
+<p>SQL_TSI_MONTH</p>
+<p>SQL_TSI_QUARTER</p>
+<p>SQL_TSI_SECOND</p>
+<p>SQL_TSI_WEEK</p>
+<p>SQL_TSI_YEAR</p>
+<p>SRID; 在8.0.3中添加（非保留）</p>
+<p>SSL （R）</p>
+<p>STACKED</p>
+<p>START</p>
+<p>STARTING （R）</p>
+<p>STARTS</p>
+<p>STATS_AUTO_RECALC</p>
+<p>STATS_PERSISTENT</p>
+<p>STATS_SAMPLE_PAGES</p>
+<p>STATUS</p>
+<p>STOP</p>
+<p>STORAGE</p>
+<p>STORED （R）</p>
+<p>STRAIGHT_JOIN （R）</p>
+<p>STREAM; 在8.0.20中添加（非保留）</p>
+<p>STRING</p>
+<p>SUBCLASS_ORIGIN</p>
+<p>SUBJECT</p>
+<p>SUBPARTITION</p>
+<p>SUBPARTITIONS</p>
+<p>SUPER</p>
+<p>SUSPEND</p>
+<p>SWAPS</p>
+<p>SWITCHES</p>
+<p>SYSTEM（R）; 在8.0.3中添加（保留）</p>
+<p>TABLE （R）</p>
+<p>TABLES</p>
+<p>TABLESPACE</p>
+<p>TABLE_CHECKSUM</p>
+<p>TABLE_NAME</p>
+<p>TEMPORARY</p>
+<p>TEMPTABLE</p>
+<p>TERMINATED （R）</p>
+<p>TEXT</p>
+<p>THAN</p>
+<p>THEN （R）</p>
+<p>THREAD_PRIORITY; 在8.0.3中添加（非保留）</p>
+<p>TIES; 在8.0.2中添加（非保留）</p>
+<p>TIME</p>
+<p>TIMESTAMP</p>
+<p>TIMESTAMPADD</p>
+<p>TIMESTAMPDIFF</p>
+<p>TINYBLOB （R）</p>
+<p>TINYINT （R）</p>
+<p>TINYTEXT （R）</p>
+<p>TO （R）</p>
+<p>TRAILING （R）</p>
+<p>TRANSACTION</p>
+<p>TRIGGER （R）</p>
+<p>TRIGGERS</p>
+<p>TRUE （R）</p>
+<p>TRUNCATE</p>
+<p>TYPE</p>
+<p>TYPES</p>
+<p>UNBOUNDED; 在8.0.2中添加（非保留）</p>
+<p>UNCOMMITTED</p>
+<p>UNDEFINED</p>
+<p>UNDO （R）</p>
+<p>UNDOFILE</p>
+<p>UNDO_BUFFER_SIZE</p>
+<p>UNICODE</p>
+<p>UNINSTALL</p>
+<p>UNION （R）</p>
+<p>UNIQUE （R）</p>
+<p>UNKNOWN</p>
+<p>UNLOCK （R）</p>
+<p>UNSIGNED （R）</p>
+<p>UNTIL</p>
+<p>UPDATE （R）</p>
+<p>UPGRADE</p>
+<p>USAGE （R）</p>
+<p>USE （R）</p>
+<p>USER</p>
+<p>USER_RESOURCES</p>
+<p>USE_FRM</p>
+<p>USING （R）</p>
+<p>UTC_DATE （R）</p>
+<p>UTC_TIME （R）</p>
+<p>UTC_TIMESTAMP （R）</p>
+<p>VALIDATION</p>
+<p>VALUE</p>
+<p>VALUES （R）</p>
+<p>VARBINARY （R）</p>
+<p>VARCHAR （R）</p>
+<p>VARCHARACTER （R）</p>
+<p>VARIABLES</p>
+<p>VARYING （R）</p>
+<p>VCPU; 在8.0.3中添加（非保留）</p>
+<p>VIEW</p>
+<p>VIRTUAL （R）</p>
+<p>VISIBLE</p>
+<p>WAIT</p>
+<p>WARNINGS</p>
+<p>WEEK</p>
+<p>WEIGHT_STRING</p>
+<p>WHEN （R）</p>
+<p>WHERE （R）</p>
+<p>WHILE （R）</p>
+<p>WINDOW（R）; 在8.0.2中添加（保留）</p>
+<p>WITH （R）</p>
+<p>WITHOUT</p>
+<p>WORK</p>
+<p>WRAPPER</p>
+<p>WRITE （R）</p>
+<p>X509</p>
+<p>XA</p>
+<p>XID</p>
+<p>XML</p>
+<p>XOR （R）</p>
+<p>YEAR</p>
+<p>YEAR_MONTH （R）</p>
+<p>ZEROFILL （R）</p>
+<p>下表显示了与MySQL 5.7相比在MySQL 8.0中添加的关键字和保留字。保留的关键字标有（R）</p>
+<p>ACTIVE</p>
+<p>ADMIN</p>
+<p>ARRAY</p>
+<p>BUCKETS</p>
+<p>CLONE</p>
+<p>COMPONENT</p>
+<p>CUME_DIST （R）</p>
+<p>DEFINITION</p>
+<p>DENSE_RANK （R）</p>
+<p>DESCRIPTION</p>
+<p>EMPTY （右）</p>
+<p>ENFORCED</p>
+<p>EXCEPT （右）</p>
+<p>EXCLUDE</p>
+<p>FAILED_LOGIN_ATTEMPTS</p>
+<p>FIRST_VALUE （R）<br>FOLLOWING</p>
+<p>GEOMCOLLECTION</p>
+<p>GET_MASTER_PUBLIC_KEY</p>
+<p>GROUPING （R）</p>
+<p>GROUPS （R）</p>
+<p>HISTOGRAM</p>
+<p>HISTORY</p>
+<p>INACTIVE</p>
+<p>INVISIBLE</p>
+<p>JSON_TABLE （R）</p>
+<p>JSON_VALUE</p>
+<p>LAG （R）</p>
+<p>LAST_VALUE （R）</p>
+<p>LATERAL （R）</p>
+<p>LEAD （R）</p>
+<p>LOCKED</p>
+<p>MASTER_COMPRESSION_ALGORITHMS</p>
+<p>MASTER_PUBLIC_KEY_PATH</p>
+<p>MASTER_TLS_CIPHERSUITES</p>
+<p>MASTER_ZSTD_COMPRESSION_LEVEL</p>
+<p>MEMBER</p>
+<p>NESTED</p>
+<p>NETWORK_NAMESPACE</p>
+<p>NOWAIT</p>
+<p>NTH_VALUE （R）</p>
+<p>NTILE （R）</p>
+<p>NULLS</p>
+<p>OF （R）</p>
+<p>OFF</p>
+<p>OJ</p>
+<p>OLD</p>
+<p>OPTIONAL</p>
+<p>ORDINALITY</p>
+<p>ORGANIZATION</p>
+<p>OTHERS</p>
+<p>OVER （R）</p>
+<p>PASSWORD_LOCK_TIME</p>
+<p>PATH</p>
+<p>PERCENT_RANK （R）</p>
+<p>PERSIST</p>
+<p>PERSIST_ONLY</p>
+<p>PRECEDING</p>
+<p>PRIVILEGE_CHECKS_USER</p>
+<p>PROCESS</p>
+<p>RANDOM</p>
+<p>RANK （R）</p>
+<p>RECURSIVE （R）</p>
+<p>REFERENCE</p>
+<p>REQUIRE_ROW_FORMAT</p>
+<p>RESOURCE</p>
+<p>RESPECT</p>
+<p>RESTART</p>
+<p>RETAIN</p>
+<p>RETURNING</p>
+<p>REUSE</p>
+<p>ROLE</p>
+<p>ROW_NUMBER （R）</p>
+<p>SECONDARY</p>
+<p>SECONDARY_ENGINE</p>
+<p>SECONDARY_LOAD</p>
+<p>SECONDARY_UNLOAD</p>
+<p>SKIP</p>
+<p>SRID</p>
+<p>STREAM</p>
+<p>SYSTEM（R）</p>
+<p>THREAD_PRIORITY</p>
+<p>TIES</p>
+<p>UNBOUNDED</p>
+<p>VCPU</p>
+<p>VISIBLE</p>
+<p>WINDOW （R）</p>
+<p>MySQL 8.0删除了关键字和保留字<br>下表显示了与MySQL 5.7相比在MySQL 8.0中删除的关键字和保留词。保留的关键字标有（R）。</p>
+<p>ANALYSE</p>
+<p>DES_KEY_FILE</p>
+<p>PARSE_GCOL_EXPR</p>
+<p>REDOFILE</p>
+<p>SQL_CACHE</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/mysql/">mysql</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/32750/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CentOS安装Hexo教程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/posts/41167/">
+                        <span class="hidden-mobile">Jackson常用方法总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <div class="comments" id="comments">
+                
+                
+  <script defer src="https://utteranc.es/client.js"
+          repo="wuuJiawei/easyboot.xyz.comment.utterances"
+          issue-term="pathname"
+  
+          label="utterances"
+    
+          theme="github-light"
+          crossorigin="anonymous"
+  >
+  </script>
+
+
+              </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+     
+    </div>
+    
+
+    
+  <!-- 备案信息 -->
+  <div>
+    <a href="http://beian.miit.gov.cn/" target="_blank" class="beian-icp"
+       rel="nofollow noopener">苏ICP备19009893号</a>
+    
+  </div>
+
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "mysql保留关键字参考指南&nbsp;",
+      ],
+      cursorChar: "|",
+      typeSpeed: 160,
+      loop: true,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+  <script>(function (i, s, o, g, r, a, m) {
+      i['DaoVoiceObject'] = r;
+      i[r] = i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        };
+      i[r].l = 1 * new Date();
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      a.charset = 'utf-8';
+      m.parentNode.insertBefore(a, m);
+    })(window, document, 'script', ('https:' === document.location.protocol ? 'https:' : 'http:') + "//widget.daovoice.io/widget/905e315a.js", 'daovoice');
+    daovoice('init', {
+      app_id: "905e315a",
+    });
+    daovoice('update');
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

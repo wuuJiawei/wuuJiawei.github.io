@@ -4,6 +4,27 @@
   
   
   <entry>
+    <title>Mac升级到BigSur后Brew报错</title>
+    <link href="/posts/14640/"/>
+    <url>/posts/14640/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Mac升级到BigSur后Brew报错"><a href="#Mac升级到BigSur后Brew报错" class="headerlink" title="Mac升级到BigSur后Brew报错"></a>Mac升级到BigSur后Brew报错</h1><p>升级到BigSur系统之后，brew命令出现如下错误：</p><pre><code class="hljs plain">Error: An exception occurred within a child process:   NoMethodError: undefined method &#96;path&#39; for nil:NilClass Did you mean?  paths</code></pre><h4 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h4><pre><code class="hljs plain">brew update-reset</code></pre><p>升级HomeBrew版本后，解决！</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Mac</tag>
+      
+      <tag>HomeBrew</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Java Bean Copy性能对比</title>
     <link href="/posts/14639/"/>
     <url>/posts/14639/</url>

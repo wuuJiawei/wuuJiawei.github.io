@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>Docker 运行中容器修改时区</title>
+    <link href="/posts/42207/"/>
+    <url>/posts/42207/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Docker-运行中容器修改时区"><a href="#Docker-运行中容器修改时区" class="headerlink" title="Docker 运行中容器修改时区"></a>Docker 运行中容器修改时区</h1><p>很多国外的镜像默认时区不是中国上海，在运行后发现时区不对，这时候想要修改时区但又不能删除容器重新运行，如何处理？</p><h4 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h4><ul><li><code>${container-name}</code>: 启动后的容器名称</li></ul><h4 id="进入容器bash"><a href="#进入容器bash" class="headerlink" title="进入容器bash"></a>进入容器bash</h4><pre><code class="hljs plain">docker exec -t $&#123;container-name&#125; bash</code></pre><h4 id="设置时区"><a href="#设置时区" class="headerlink" title="设置时区"></a>设置时区</h4><pre><code class="hljs plain">tzselect</code></pre><p>根据选项提示选择亚洲-中国-上海，效果如下：</p><pre><code class="hljs plain">root@c7da5b2f6cde:&#x2F;# tzselectPlease identify a location so that time zone rules can be set correctly.Please select a continent, ocean, &quot;coord&quot;, or &quot;TZ&quot;.1) Africa      7) Europe2) Americas      8) Indian Ocean3) Antarctica      9) Pacific Ocean4) Asia     10) coord - I want to use geographical coordinates.5) Atlantic Ocean     11) TZ - I want to specify the time zone using the Posix TZ format.6) Australia#? 4Please select a country whose clocks agree with yours.1) Afghanistan   9) China    17) Iraq      25) Kyrgyzstan33) Oman  41) Sri Lanka    49) Vietnam2) Armenia  10) Cyprus    18) Israel      26) Laos34) Pakistan  42) Syria    50) Yemen3) Azerbaijan  11) East Timor    19) Japan      27) Lebanon35) Palestine  43) Taiwan4) Bahrain  12) Georgia    20) Jordan      28) Macau36) Philippines  44) Tajikistan5) Bangladesh  13) Hong Kong    21) Kazakhstan      29) Malaysia37) Qatar  45) Thailand6) Bhutan  14) India    22) Korea (North)      30) Mongolia38) Russia  46) Turkmenistan7) Brunei  15) Indonesia    23) Korea (South)      31) Myanmar (Burma)39) Saudi Arabia  47) United Arab Emirates8) Cambodia  16) Iran    24) Kuwait      32) Nepal40) Singapore  48) Uzbekistan#? 9Please select one of the following time zone regions.1) Beijing Time2) Xinjiang Time#? 1The following information has been given:ChinaBeijing TimeTherefore TZ&#x3D;&#39;Asia&#x2F;Shanghai&#39; will be used.Selected time is now:Thu Dec 17 14:51:04 CST 2020.Universal Time is now:Thu Dec 17 06:51:04 UTC 2020.Is the above information OK?1) Yes2) No#? 1You can make this change permanent for yourself by appending the lineTZ&#x3D;&#39;Asia&#x2F;Shanghai&#39;; export TZto the file &#39;.profile&#39; in your home directory; then log out and log in again.Here is that TZ value again, this time on standard output so that youcan use the &#x2F;usr&#x2F;bin&#x2F;tzselect command in shell scripts:Asia&#x2F;Shanghai</code></pre><h4 id="复制时区到localtime"><a href="#复制时区到localtime" class="headerlink" title="复制时区到localtime"></a>复制时区到localtime</h4><pre><code class="hljs plain">cp &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime</code></pre><h4 id="退出容器"><a href="#退出容器" class="headerlink" title="退出容器"></a>退出容器</h4><pre><code class="hljs plain">exec</code></pre><h4 id="重启容器"><a href="#重启容器" class="headerlink" title="重启容器"></a>重启容器</h4><pre><code class="hljs plain">docker stop $&#123;container-name&#125;docker start $&#123;container-name&#125;</code></pre>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Docker</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Docker Redis容器间访问</title>
     <link href="/posts/14641/"/>
     <url>/posts/14641/</url>

@@ -166,6 +166,51 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/58332/" target="_self">
+          <img src="https://img.hacpai.com/bing/20200128.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt="Mybatis(Plus)结合Redis配置二级缓存">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/58332/">Mybatis(Plus)结合Redis配置二级缓存</a>
+
+      <a href="/posts/58332/" class="index-excerpt">
+        
+        
+          
+        
+        <div> 
+前言众所周知，Mybatis有一级、二级缓存配置。
+一级缓存是SqlSession将每次查询结果保存到Cache中，下次有一样的查询就直接存Cache中获取，避免频繁读写造成数据库资源浪费。
+但是一级缓存终究只是在Cache中，性能相较于EhCache或Redis等有差异，因此我们决定开启二级缓存，并将缓存直接保存到外部Redis中，保证资源的有效利用。
+注意事项本文涉及代码依赖于Spring</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-04-02
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/mybatis/">mybatis</a>
+            
+              <a href="/tags/redis/">redis</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/posts/14426/" target="_self">
           <img src="https://img.hacpai.com/bing/20190629.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt="MongoDB入门指南">
         </a>
@@ -504,44 +549,6 @@ IDEA 最近又出了新手段封掉了一大批激活码，但常言道“道高
               <a href="/tags/npm/">npm</a>
             
               <a href="/tags/%E6%8A%A5%E9%94%99%E5%A4%84%E7%90%86/">报错处理</a>
-            
-          </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <div class="col-12 col-md-12 mx-auto index-info">
-      <a class="index-header" href="/posts/52666/">maven打包时跳过单元测试的方法</a>
-
-      <a href="/posts/52666/" class="index-excerpt">
-        
-        
-          
-        
-        <div>
-初入门时，面向百度编程；水平愈高后，面向谷歌编程。可奈何英文水平属实太差，转来转去还是逃不出这个大圈。
-
-1. 添加properties网络上使用这种方法的人较少， 但却是我个人最推荐的方法，不用写命令行，不用改build，还是所有maven插件通用。直接上代码：
-&lt;properties&gt;
-    &lt;maven.test.skip&gt;true&lt;&#x2F;maven.</div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>&nbsp;2019-12-30
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/maven/">maven</a>
             
           </div>
         

@@ -166,6 +166,50 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/posts/14641/" target="_self">
+          <img src="https://cdn.pixabay.com/photo/2020/12/18/20/52/christmas-5842973_1280.jpg" srcset="/img/loading.gif" alt="Docker Redis容器间访问">
+        </a>
+      </div>
+    
+    <div class="col-12 col-md-8 mx-auto index-info">
+      <a class="index-header" href="/posts/14641/">Docker Redis容器间访问</a>
+
+      <a href="/posts/14641/" class="index-excerpt">
+        
+        
+          
+        
+        <div>Docker Redis容器间访问
+修改redis.conf配置，将 bind 127.0.0.1 那一行注释
+重启Redis容器
+使用 docker inspect --format &#39;&amp;#123;&amp;#123; .NetworkSettings.IPAddress &amp;#125;&amp;#125;&#39; redis 命令获取容器的ip，其中 redis 为容器</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-12-23
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Docker/">Docker</a>
+            
+              <a href="/tags/Redis/">Redis</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/posts/14640/" target="_self">
           <img src="https://cdn.pixabay.com/photo/2014/08/12/12/12/computer-416569_1280.jpg" srcset="/img/loading.gif" alt="Mac升级到BigSur后Brew报错">
         </a>
@@ -563,51 +607,6 @@ cd</div>
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/git/">git</a>
-            
-          </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/posts/58332/" target="_self">
-          <img src="https://img.hacpai.com/bing/20200128.jpg?imageView2/1/w/960/h/540/interlace/1/q/100" srcset="/img/loading.gif" alt="Mybatis(Plus)结合Redis配置二级缓存">
-        </a>
-      </div>
-    
-    <div class="col-12 col-md-8 mx-auto index-info">
-      <a class="index-header" href="/posts/58332/">Mybatis(Plus)结合Redis配置二级缓存</a>
-
-      <a href="/posts/58332/" class="index-excerpt">
-        
-        
-          
-        
-        <div> 
-前言众所周知，Mybatis有一级、二级缓存配置。
-一级缓存是SqlSession将每次查询结果保存到Cache中，下次有一样的查询就直接存Cache中获取，避免频繁读写造成数据库资源浪费。
-但是一级缓存终究只是在Cache中，性能相较于EhCache或Redis等有差异，因此我们决定开启二级缓存，并将缓存直接保存到外部Redis中，保证资源的有效利用。
-注意事项本文涉及代码依赖于Spring</div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>&nbsp;2020-04-02
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/mybatis/">mybatis</a>
-            
-              <a href="/tags/redis/">redis</a>
             
           </div>
         

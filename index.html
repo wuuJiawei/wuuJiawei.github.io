@@ -182,7 +182,9 @@
         <div>Docker Redis容器间访问
 修改redis.conf配置，将 bind 127.0.0.1 那一行注释
 重启Redis容器
-使用 docker inspect --format &#39;&amp;#123;&amp;#123; .NetworkSettings.IPAddress &amp;#125;&amp;#125;&#39; redis 命令获取容器的ip，其中 redis 为容器</div>
+使用 docker inspect --format &#39;{{ .NetworkSettings.IPAddress &#39; redis 命令获取容器的ip，其中 redis 为容器名称
+
+[root@localhost ~]# docker inspect</div>
       </a>
 
       <div class="index-btm post-metas">

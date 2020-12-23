@@ -8,7 +8,7 @@
     <link href="/posts/14641/"/>
     <url>/posts/14641/</url>
     
-    <content type="html"><![CDATA[<h1 id="Docker-Redis容器间访问"><a href="#Docker-Redis容器间访问" class="headerlink" title="Docker Redis容器间访问"></a>Docker Redis容器间访问</h1><ol><li>修改redis.conf配置，将 <code>bind 127.0.0.1</code> 那一行注释</li><li>重启Redis容器</li><li>使用 <code>docker inspect --format &#39;&amp;#123;&amp;#123; .NetworkSettings.IPAddress &amp;#125;&amp;#125;&#39; redis</code> 命令获取容器的ip，其中 <code>redis</code> 为容器名称</li></ol><pre><code class="hljs shell">[root@localhost ~]# docker inspect --format '&amp;#123;&amp;#123; .NetworkSettings.IPAddress &amp;#125;&amp;#125;' redis172.17.0.2</code></pre><ol start="4"><li>修改redis连接host为获取到的ip</li></ol>]]></content>
+    <content type="html"><![CDATA[<h1 id="Docker-Redis容器间访问"><a href="#Docker-Redis容器间访问" class="headerlink" title="Docker Redis容器间访问"></a>Docker Redis容器间访问</h1><ol><li>修改redis.conf配置，将 <code>bind 127.0.0.1</code> 那一行注释</li><li>重启Redis容器</li><li>使用 <code>docker inspect --format &#39;{{ .NetworkSettings.IPAddress &#39; redis</code> 命令获取容器的ip，其中 <code>redis</code> 为容器名称</li></ol><pre><code class="hljs shell">[root@localhost ~]# docker inspect --format '&#123;% raw %&#125;&#123;&#123;&#123;% endraw %&#125; .NetworkSettings.IPAddress &#123;% raw %&#125;&#123;% endraw %&#125;' redis172.17.0.2</code></pre><ol start="4"><li>修改redis连接host为获取到的ip</li></ol>]]></content>
     
     
     

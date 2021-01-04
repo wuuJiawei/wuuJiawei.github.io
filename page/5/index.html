@@ -17,7 +17,7 @@
   <meta name="description" content="要有为，要无畏">
   <meta name="author" content="wujiawei0926@yeah.net">
   <meta name="keywords" content="生而无畏,shengerwuwei,无畏,生,博客,个人博客,有为,wuwei,勇士,无惧,站点,个人站点,hexo,博主">
-  <title>归档 - 生而无畏</title>
+  <title>生而无畏</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
@@ -46,7 +46,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 100vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -131,7 +131,7 @@
          style="background: url('https://api.dujin.org/bing/1920.php') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
-        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.5)">
           <div class="container text-center white-text fadeInUp">
             <span class="h2" id="subtitle">
               
@@ -140,6 +140,10 @@
             
           </div>
 
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
           
         </div>
       </div>
@@ -150,27 +154,72 @@
     
       <div class="container nopadding-md">
         <div class="py-5" id="board"
-          >
+          style=margin-top:0>
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="list-group">
-  <p class="h4">共计 41 篇文章</p>
-  <hr>
-  
+
+  <div class="row mx-auto index-card">
     
-      
-      <p class="h5">2020</p>
     
-    <a href="/posts/14426/" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">MongoDB入门指南</span>
-      <span style="float: right;">03-31</span>
-    </a>
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/posts/2345/">正确安装Solo的姿势</a>
+
+      <a href="/posts/2345/" class="index-excerpt">
+        
+        
+          
+        
+        <div> 
+安装Docker这是一篇来自知乎的安装教程：https://zhuanlan.zhihu.com/p/54147784，号称 史上最全（全平台）docker安装方法！
+也在这里埋个坑，计划开个专栏专门讲一讲Docker的安装，包括使用命令行安装和在宝塔中安装。
+使用Docker部署
+获取Docker镜像
+docker pull b3log&#x2F;solo
+创建数据库库名 solo，字符集使</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2019-11-01
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Solo%E5%AE%89%E8%A3%85/">Solo安装</a>
+            
+              <a href="/tags/Solo/">Solo</a>
+            
+              <a href="/tags/Docker/">Docker</a>
+            
+              <a href="/tags/nginx/">nginx</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/4/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    </span>
+  </nav>
   
-</div>
+  <script>
+    for (ele of document.getElementById("pagination").getElementsByTagName("a")) {
+      ele.href += '#board';
+    }
+  </script>
 
 
 
@@ -265,7 +314,7 @@
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "归档&nbsp;",
+        "要有为，要无畏&nbsp;",
       ],
       cursorChar: "|",
       typeSpeed: 160,

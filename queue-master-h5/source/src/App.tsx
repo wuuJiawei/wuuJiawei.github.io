@@ -46,7 +46,7 @@ function HomeScreen({ profile, go }: { profile: Profile; go: (screen: Screen) =>
       <button className="primary big" onClick={() => go("map")}><b>开始排队</b><small>主线进度 {Object.keys(profile.stars).length}/30 · {stars} 星</small></button>
     </section>
     <section className="entry-grid">
-      <button className="entry daily-entry" onClick={() => go("daily")}><span>🗳️</span><div><b>今日判断</b><small>3 个全民争议题</small></div><i>{profile.daily[todayKey()]?.length || 0}/3</i></button>
+      <button className="entry daily-entry" onClick={() => go("daily")}><span>🗳️</span><div><b>今日判断</b><small>3 个全民争议题</small></div><i>{profile.daily[todayKey()]?.filter(Boolean).length || 0}/3</i></button>
       <button className="entry" onClick={() => go("pk")}><span>⚔️</span><div><b>好友 PK</b><small>同题挑战 · 输了复仇</small></div><i>去挑战</i></button>
       <button className="entry" onClick={() => go("rank")}><span>🏆</span><div><b>排位赛</b><small>{tierNames[tierIndex(profile.rankPoints)]}</small></div><i>{profile.rankPoints} 分</i></button>
       <button className="entry office-entry" onClick={() => go("office")}><span>🏢</span><div><b>我的办公室</b><small>Lv.{profile.officeLevel} · 图鉴 {profile.collection.length}/{collectionNames.length}</small></div><i>装修</i></button>
@@ -134,6 +134,9 @@ function PlayScreen({ session, onFinish }: { session: Session; onFinish: (result
     if (level.objective === "COMBO" && best >= level.target) finish(true);
     if (level.objective === "TARGET" && targetHits >= level.target) finish(true);
   }, [best, correct, finish, session.level, targetHits]);
+  useEffect(() => {
+    if (order <= 0) finish(false);
+  }, [finish, order]);
 
   const classify = useCallback((side: Side) => {
     if (flight || finished.current) return;
@@ -265,10 +268,11 @@ function DailyScreen({ profile, update }: { profile: Profile; update: (next: Pro
     const nextChoices = [...choices]; nextChoices[active] = side;
     update({ ...profile, coins: profile.coins + 10, daily: { ...profile.daily, [key]: nextChoices } });
   };
-  const completed = choices.length >= 3;
+  const completedCount = choices.filter(Boolean).length;
+  const completed = completedCount >= 3;
   return <div className="daily-screen scroll">
     <div className="page-heading"><span>每日 3 题 · {key}</span><h1>今日全民判断</h1><p>先做选择，才能看到“全服”倾向。没有标准答案，只有不同直觉。</p></div>
-    <div className="daily-dots">{dailyPrompts.map((_, i) => <button key={i} className={i === active ? "active" : ""} onClick={() => setActive(i)}>{choices[i] ? "✓" : i + 1}</button>)}</div>
+    <div className="daily-dots">{dailyPrompts.map((_, i) => <button key={i} disabled={i > completedCount} className={i === active ? "active" : ""} onClick={() => setActive(i)}>{choices[i] ? "✓" : i + 1}</button>)}</div>
     <div className="daily-card">
       <div className="question-tag">第 {active + 1} 题 · 荒诞职场观察</div>
       <h2>{prompt.title}</h2>

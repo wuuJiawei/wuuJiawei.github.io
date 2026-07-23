@@ -1,177 +1,404 @@
-"use client";
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  chapterIcons, chapterNames, collectionFor, collectionNames, defaultProfile, Level, levels,
+  loadProfile, makePerson, Mode, objectiveText, Person, Profile, Rule, rules, saveProfile,
+  seeded, Side, tierIndex, tierNames, todayKey,
+} from "./game";
 
-type Side = "LEFT" | "RIGHT";
-type Person = {
-  id: number; name: string; color: string; hat: boolean; glasses: boolean;
-  coffee: boolean; laptop: boolean; bag: boolean; phone: boolean;
-  tired: boolean; sneaky: boolean; programmer: number; slacking: number; quitting: number;
+type Screen = "home" | "map" | "play" | "result" | "daily" | "pk" | "rank" | "office";
+type Session = { mode: Mode; level: Level; seed: number; opponent?: number };
+type RunResult = {
+  session: Session; score: number; correct: number; errors: number; bestCombo: number;
+  targetHits: number; stars: number; won: boolean; last?: { person: Person; rule: Rule; side: Side; percent: number };
 };
-type Rule = {
-  title: string; hint: string; left: string; right: string; stage: string;
-  subjective?: boolean; test: (p: Person) => boolean | number;
-  threshold?: number; ambiguous?: [number, number];
-};
-
-const names = ["小林", "阿杰", "小周", "老王", "Mia", "大壮", "可乐", "Tony"];
-const colors = ["red", "blue", "black", "cream", "green"];
-const rand = (seed: number) => {
-  const x = Math.sin(seed * 999) * 43758.5453;
-  return x - Math.floor(x);
-};
-function makePerson(id: number): Person {
-  const yes = (n: number, chance = .5) => rand(id * 13 + n) < chance;
-  const hat = yes(1, .35), glasses = yes(2, .42), coffee = yes(3, .46);
-  const laptop = yes(4), bag = yes(5, .52), phone = yes(6, .42);
-  const tired = yes(7, .48), sneaky = yes(8, .35);
-  const color = colors[Math.floor(rand(id + 2) * colors.length)];
-  return {
-    id, name: names[id % names.length], color, hat, glasses, coffee, laptop, bag, phone, tired, sneaky,
-    programmer: (laptop ? 28 : 0) + (coffee ? 16 : 0) + (glasses ? 12 : 0) + (tired ? 12 : 0) + (color === "black" ? 8 : 0) + Math.floor(rand(id + 21) * 12),
-    slacking: (phone ? 30 : 0) + (sneaky ? 25 : 0) + (coffee && !laptop ? 10 : 0) + (!bag ? 8 : 0) + Math.floor(rand(id + 31) * 25),
-    quitting: (bag ? 22 : 0) + (laptop ? 18 : 0) + (tired ? 22 : 0) + (!coffee ? 8 : 0) + Math.floor(rand(id + 41) * 24),
-  };
-}
-
-const rules: Rule[] = [
-  { title: "戴帽子的去右边", hint: "看清楚，包可不算帽子", left: "没戴帽子", right: "戴了帽子", stage: "热身题", test: p => p.hat },
-  { title: "拿咖啡的去右边", hint: "工牌可以不带，咖啡不能不带", left: "空手上班", right: "咖啡续命", stage: "热身题", test: p => p.coffee },
-  { title: "戴眼镜的去右边", hint: "墨镜也算，主打一个公平", left: "视力真好", right: "眼镜一族", stage: "热身题", test: p => p.glasses },
-  { title: "背电脑包并拿咖啡", hint: "两个条件必须同时满足", left: "准备不足", right: "装备齐全", stage: "组合条件", test: p => p.laptop && p.coffee },
-  { title: "穿红衣，但没有戴眼镜", hint: "红衣服 AND NOT 眼镜", left: "不符合", right: "完全符合", stage: "组合条件", test: p => p.color === "red" && !p.glasses },
-  { title: "看起来像程序员", hint: "电脑、咖啡、眼镜和疲惫脸都是线索", left: "不太像", right: "像程序员", stage: "推测判断", subjective: true, test: p => p.programmer, threshold: 60, ambiguous: [45, 69] },
-  { title: "有一种偷偷摸鱼的感觉", hint: "手机、眼神和姿势不会说谎……吧？", left: "认真工作", right: "偷偷摸鱼", stage: "全民争议", subjective: true, test: p => p.slacking, threshold: 60, ambiguous: [41, 69] },
-  { title: "好像马上要提离职", hint: "抱着电脑、背好包，还面无表情", left: "还能再熬", right: "准备跑路", stage: "全民争议", subjective: true, test: p => p.quitting, threshold: 62, ambiguous: [43, 72] },
-];
-function getRule(elapsed: number) {
-  if (elapsed < 12) return rules[Math.floor(elapsed / 6) % 3];
-  if (elapsed < 30) return rules[3 + Math.floor((elapsed - 12) / 9) % 2];
-  if (elapsed < 44) return rules[5];
-  return rules[6 + Math.floor((elapsed - 44) / 8) % 2];
-}
 
 function PersonArt({ person, mini = false }: { person: Person; mini?: boolean }) {
-  return <div className={`person ${mini ? "mini" : ""}`} aria-label={`${person.name}${person.hat ? "，戴帽子" : ""}${person.glasses ? "，戴眼镜" : ""}${person.coffee ? "，拿咖啡" : ""}`}>
+  return <div className={`person ${mini ? "mini" : ""}`}>
     <div className="shadow" />
     {person.bag && <div className="bag">▦</div>}
-    <div className="legs"><i/><i/></div>
+    <div className="legs"><i /><i /></div>
     <div className={`body shirt-${person.color}`}>{person.laptop && <span className="laptop">⌁</span>}</div>
     <div className="arm left-arm">{person.coffee && <span className="coffee">☕</span>}</div>
     <div className="arm right-arm">{person.phone && <span className="phone">▣</span>}</div>
-    <div className="head"><span className="hair"/>{person.hat && <span className="hat"/>}{person.glasses && <span className="glasses"><i/><i/></span>}<span className={`mouth ${person.tired ? "tired" : ""}`}/>{person.sneaky && <span className="sneaky">›</span>}</div>
+    <div className="head">
+      <span className="hair" />{person.hat && <span className="hat" />}
+      {person.glasses && <span className="glasses"><i /><i /></span>}
+      <span className={`mouth ${person.tired ? "tired" : ""}`} />{person.sneaky && <span className="sneaky">›</span>}
+    </div>
     {!mini && <div className="name">{person.name}</div>}
   </div>;
 }
 
-export default function Home() {
-  const [screen, setScreen] = useState<"intro"|"play"|"result">("intro");
-  const [time, setTime] = useState(60);
+function TopBar({ profile, onHome, title }: { profile: Profile; onHome?: () => void; title?: string }) {
+  return <header className="brandbar">
+    <button className="logo" onClick={onHome} aria-label="返回首页">排</button>
+    <div><strong>{title || "排队大师"}</strong><small>{tierNames[tierIndex(profile.rankPoints)]}</small></div>
+    <div className="wallet"><span>⭐ {Object.values(profile.stars).reduce((a, b) => a + b, 0)}</span><span>🪙 {profile.coins}</span></div>
+  </header>;
+}
+
+function HomeScreen({ profile, go }: { profile: Profile; go: (screen: Screen) => void }) {
+  const stars = Object.values(profile.stars).reduce((a, b) => a + b, 0);
+  return <div className="home-screen scroll">
+    <section className="hero">
+      <div><span className="eyebrow">今日待办 · 还有很多人没排</span><h1>凭你的职场直觉，<br /><em>把他们安排明白。</em></h1></div>
+      <div className="hero-art"><PersonArt person={makePerson(26)} /><i>领导，<br />我该去哪队？</i></div>
+      <button className="primary big" onClick={() => go("map")}><b>开始排队</b><small>主线进度 {Object.keys(profile.stars).length}/30 · {stars} 星</small></button>
+    </section>
+    <section className="entry-grid">
+      <button className="entry daily-entry" onClick={() => go("daily")}><span>🗳️</span><div><b>今日判断</b><small>3 个全民争议题</small></div><i>{profile.daily[todayKey()]?.length || 0}/3</i></button>
+      <button className="entry" onClick={() => go("pk")}><span>⚔️</span><div><b>好友 PK</b><small>同题挑战 · 输了复仇</small></div><i>去挑战</i></button>
+      <button className="entry" onClick={() => go("rank")}><span>🏆</span><div><b>排位赛</b><small>{tierNames[tierIndex(profile.rankPoints)]}</small></div><i>{profile.rankPoints} 分</i></button>
+      <button className="entry office-entry" onClick={() => go("office")}><span>🏢</span><div><b>我的办公室</b><small>Lv.{profile.officeLevel} · 图鉴 {profile.collection.length}/{collectionNames.length}</small></div><i>装修</i></button>
+    </section>
+    <div className="return-hook"><b>昨日真相</b><span>“他不是摸鱼，是在看线上报警。”</span><button onClick={() => go("daily")}>查看少数派翻盘 →</button></div>
+  </div>;
+}
+
+function MapScreen({ profile, onPlay }: { profile: Profile; onPlay: (level: Level) => void }) {
+  return <div className="map-screen scroll">
+    <div className="page-heading"><span>30 个主线关卡</span><h1>职场众生排队图</h1><p>通关即可继续，累计约 60% 星星就能进入下一章。</p></div>
+    {chapterNames.map((name, ci) => {
+      const chapterLevels = levels.filter(l => l.chapter === ci + 1);
+      const chapterStars = chapterLevels.reduce((sum, l) => sum + (profile.stars[l.id] || 0), 0);
+      const priorStars = levels.filter(l => l.chapter < ci + 1).reduce((sum, l) => sum + (profile.stars[l.id] || 0), 0);
+      const unlocked = ci === 0 || priorStars >= ci * 11;
+      return <section className={`chapter ${unlocked ? "" : "locked"}`} key={name}>
+        <div className="chapter-title"><i>{chapterIcons[ci]}</i><div><small>第 {ci + 1} 章 · {chapterStars}/18 星</small><h2>{name}</h2></div>{!unlocked && <b>🔒 需 {ci * 11} 星</b>}</div>
+        <div className="level-row">
+          {chapterLevels.map(level => {
+            const previousPassed = level.id === 1 || !!profile.stars[level.id - 1] || level.id % 6 === 1;
+            const available = unlocked && previousPassed;
+            return <button key={level.id} className={`level-node ${profile.stars[level.id] ? "passed" : ""}`} disabled={!available} onClick={() => onPlay(level)}>
+              <b>{level.id}</b><span>{"★".repeat(profile.stars[level.id] || 0)}{"☆".repeat(3 - (profile.stars[level.id] || 0))}</span>
+              <small>{level.objective === "SURVIVAL" ? "生存" : level.objective === "PERFECT" ? "无错" : level.objective === "COMBO" ? "连击" : level.objective === "TARGET" ? "找人" : "数量"}</small>
+            </button>;
+          })}
+        </div>
+      </section>;
+    })}
+  </div>;
+}
+
+function PlayScreen({ session, onFinish }: { session: Session; onFinish: (result: RunResult) => void }) {
+  const [time, setTime] = useState(session.level.duration);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [best, setBest] = useState(0);
   const [order, setOrder] = useState(100);
-  const [id, setId] = useState(7);
-  const [flight, setFlight] = useState<Side|null>(null);
-  const [feedback, setFeedback] = useState<{kind:string;text:string}|null>(null);
-  const [counts, setCounts] = useState([0,0]);
-  const [judged, setJudged] = useState(0);
-  const [disputed, setDisputed] = useState(0);
-  const [last, setLast] = useState<{person:Person;rule:Rule;side:Side;percent:number}|null>(null);
-  const [shareText, setShareText] = useState("分享我的判断");
-  const dragX = useRef<number|null>(null);
-  const person = useMemo(() => makePerson(id), [id]);
-  const rule = getRule(60-time);
+  const [index, setIndex] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [errors, setErrors] = useState(0);
+  const [targetHits, setTargetHits] = useState(0);
+  const [flight, setFlight] = useState<Side | null>(null);
+  const [feedback, setFeedback] = useState<{ kind: string; text: string } | null>(null);
+  const [last, setLast] = useState<RunResult["last"]>();
+  const dragX = useRef<number | null>(null);
+  const finished = useRef(false);
+  const person = useMemo(() => makePerson(session.seed, index), [session.seed, index]);
+  const availableRules = useMemo(() => rules.filter(r => session.level.ruleIds.includes(r.id)), [session.level.ruleIds]);
+  const rule = availableRules[Math.floor(index / 4) % availableRules.length];
+  const accuracy = correct + errors ? correct / (correct + errors) : 1;
 
-  const start = useCallback(() => {
-    setTime(60); setScore(0); setCombo(0); setBest(0); setOrder(100);
-    setId(Date.now()%1000+7); setFlight(null); setFeedback(null); setCounts([0,0]);
-    setJudged(0); setDisputed(0); setLast(null); setShareText("分享我的判断"); setScreen("play");
-  }, []);
+  const finish = useCallback((forcedWon?: boolean) => {
+    if (finished.current) return;
+    finished.current = true;
+    let won = forcedWon ?? true;
+    if (session.level.objective === "COUNT") won = correct >= session.level.target;
+    if (session.level.objective === "SURVIVAL") won = order > 0;
+    if (session.level.objective === "PERFECT") won = errors === 0 && correct >= session.level.target;
+    if (session.level.objective === "COMBO") won = best >= session.level.target;
+    if (session.level.objective === "TARGET") won = targetHits >= session.level.target;
+    const stars = won ? 1 + (accuracy >= .9 ? 1 : 0) + (errors === 0 || best >= 12 ? 1 : 0) : 0;
+    onFinish({ session, score, correct, errors, bestCombo: best, targetHits, stars, won, last });
+  }, [accuracy, best, correct, errors, last, onFinish, order, score, session, targetHits]);
+
+  const finishRef = useRef(finish);
+  finishRef.current = finish;
   useEffect(() => {
-    if (screen !== "play") return;
-    const timer = window.setInterval(() => setTime(v => {
-      if (v <= 1) { window.clearInterval(timer); setScreen("result"); return 0; }
-      return v-1;
+    const timer = window.setInterval(() => setTime(value => {
+      if (value <= 1) {
+        window.clearInterval(timer);
+        window.setTimeout(() => finishRef.current(), 0);
+        return 0;
+      }
+      return value - 1;
     }), 1000);
     return () => window.clearInterval(timer);
-  }, [screen]);
+  }, [session.seed]);
+
+  useEffect(() => {
+    const level = session.level;
+    if (level.objective === "COUNT" && correct >= level.target) finish(true);
+    if (level.objective === "PERFECT" && correct >= level.target) finish(true);
+    if (level.objective === "COMBO" && best >= level.target) finish(true);
+    if (level.objective === "TARGET" && targetHits >= level.target) finish(true);
+  }, [best, correct, finish, session.level, targetHits]);
 
   const classify = useCallback((side: Side) => {
-    if (screen !== "play" || flight) return;
+    if (flight || finished.current) return;
     const value = rule.test(person);
-    let result: "correct"|"wrong"|"ambiguous";
+    let result: "correct" | "wrong" | "ambiguous";
+    let expected: Side;
     if (rule.subjective && typeof value === "number") {
-      const [low,high] = rule.ambiguous ?? [45,65];
-      if (value >= low && value <= high) result = "ambiguous";
-      else result = (value >= (rule.threshold ?? 60) ? "RIGHT" : "LEFT") === side ? "correct" : "wrong";
-    } else result = (value ? "RIGHT" : "LEFT") === side ? "correct" : "wrong";
-    setFlight(side); setJudged(v=>v+1); setCounts(v => side === "LEFT" ? [v[0]+1,v[1]] : [v[0],v[1]+1]);
-    if (result === "correct") {
-      const c = combo+1; setCombo(c); setBest(v=>Math.max(v,c));
-      setScore(v=>v+100*(c>=10?3:c>=5?2:1)); setOrder(v=>Math.min(100,v+3));
-      setFeedback({kind:result,text:c>=10?"漂亮！×3":"判断正确"});
-    } else if (result === "wrong") {
-      setCombo(0); setFeedback({kind:result,text:"队伍乱了！−18"});
-      setOrder(v => { const next=Math.max(0,v-18); if(!next) window.setTimeout(()=>setScreen("result"),440); return next; });
+      const [low, high] = rule.ambiguous || [45, 65];
+      expected = value >= (rule.threshold || 60) ? "RIGHT" : "LEFT";
+      result = value >= low && value <= high ? "ambiguous" : expected === side ? "correct" : "wrong";
     } else {
-      const percent=52+Math.floor(rand(person.id+rule.title.length)*18);
-      setDisputed(v=>v+1); setScore(v=>v+50); setLast({person,rule,side,percent:side==="RIGHT"?percent:100-percent});
-      setFeedback({kind:result,text:`存在争议 · ${percent}% 选右边`});
+      expected = value ? "RIGHT" : "LEFT";
+      result = expected === side ? "correct" : "wrong";
     }
-    window.setTimeout(()=>{ setId(v=>v+1); setFlight(null); setFeedback(null); },430);
-  }, [combo,flight,person,rule,screen]);
-  useEffect(() => {
-    if (screen !== "play") return;
-    const key=(e:KeyboardEvent)=>{ if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a") classify("LEFT"); if(e.key==="ArrowRight"||e.key.toLowerCase()==="d") classify("RIGHT"); };
-    window.addEventListener("keydown",key); return()=>window.removeEventListener("keydown",key);
-  },[classify,screen]);
+    setFlight(side);
+    if (result === "correct") {
+      const nextCombo = combo + 1;
+      setCorrect(v => v + 1); setCombo(nextCombo); setBest(v => Math.max(v, nextCombo));
+      if (side === "RIGHT") setTargetHits(v => v + 1);
+      setScore(v => v + 100 * (nextCombo >= 10 ? 3 : nextCombo >= 5 ? 2 : 1));
+      setOrder(v => Math.min(100, v + 3));
+      setFeedback({ kind: result, text: nextCombo >= 10 ? "狂热分类 ×3" : "判断正确" });
+    } else if (result === "wrong") {
+      setErrors(v => v + 1); setCombo(0); setOrder(v => Math.max(0, v - 22));
+      setFeedback({ kind: result, text: session.level.objective === "PERFECT" ? "零失误失败！" : "队伍乱了 −22" });
+      if (session.level.objective === "PERFECT") window.setTimeout(() => finish(false), 390);
+    } else {
+      const percent = 52 + Math.floor(seeded(person.id + rule.title.length) * 18);
+      setCorrect(v => v + 1); setScore(v => v + 50);
+      setLast({ person, rule, side, percent: side === "RIGHT" ? percent : 100 - percent });
+      setFeedback({ kind: result, text: `存在争议 · ${percent}% 选右边` });
+    }
+    window.setTimeout(() => { setIndex(v => v + 1); setFlight(null); setFeedback(null); }, 420);
+  }, [combo, finish, flight, person, rule, session.level.objective]);
 
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") classify("LEFT");
+      if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") classify("RIGHT");
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [classify]);
+
+  const progress = session.level.objective === "COUNT" || session.level.objective === "PERFECT" ? correct
+    : session.level.objective === "COMBO" ? best : session.level.objective === "TARGET" ? targetHits : session.level.duration - time;
+  const target = session.level.objective === "SURVIVAL" ? session.level.duration : session.level.target;
+  const opponentProgress = session.opponent ? Math.min(99, Math.floor((session.level.duration - time) / session.level.duration * 100 + seeded(session.seed) * 9)) : 0;
+
+  return <div className="play-screen">
+    <div className="play-top">
+      <div><small>{session.mode === "campaign" ? `第 ${session.level.id} 关` : session.mode === "ranked" ? "排位幽灵赛" : "好友挑战"}</small><b>{objectiveText(session.level)}</b></div>
+      <div className="timer"><b>{time}</b><small>秒</small></div>
+      <div className="scorebox"><small>得分</small><b>{score}</b></div>
+    </div>
+    {session.opponent && <div className="versus-progress"><span>你 <b>{Math.round(progress / Math.max(1, target) * 100)}%</b></span><i><em style={{ width: `${Math.min(100, progress / Math.max(1, target) * 100)}%` }} /></i><span>对手 <b>{opponentProgress}%</b></span></div>}
+    <div className={`rule-card ${rule.subjective ? "subjective" : ""}`}><span>{rule.stage}</span><h2>{rule.title}</h2><p>{rule.hint}</p></div>
+    <div className="work-zone">
+      <div className="order-meter"><small>秩序</small><i><em style={{ width: `${order}%` }} /></i></div>
+      {combo >= 2 && <div className="combo"><b>{combo}</b> 连击 <i>×{combo >= 10 ? 3 : combo >= 5 ? 2 : 1}</i></div>}
+      <div className={`person-card ${flight === "LEFT" ? "fly-left" : flight === "RIGHT" ? "fly-right" : ""}`}
+        onPointerDown={e => { dragX.current = e.clientX; e.currentTarget.setPointerCapture(e.pointerId); }}
+        onPointerUp={e => { if (dragX.current === null) return; const d = e.clientX - dragX.current; dragX.current = null; if (Math.abs(d) > 34) classify(d > 0 ? "RIGHT" : "LEFT"); }}>
+        <PersonArt person={person} />
+        <div className="clues">{person.hat && <span>帽子</span>}{person.glasses && <span>眼镜</span>}{person.coffee && <span>咖啡</span>}{person.laptop && <span>电脑</span>}{person.phone && <span>手机</span>}</div>
+        <small>按住人物，向左或向右滑</small>
+      </div>
+      {feedback && <div className={`feedback ${feedback.kind}`}>{feedback.text}</div>}
+      <div className="goal-progress"><i style={{ width: `${Math.min(100, progress / Math.max(1, target) * 100)}%` }} /><span>{Math.min(progress, target)} / {target}</span></div>
+    </div>
+    <div className="queues">
+      <button className="queue left" onClick={() => classify("LEFT")}><span>←</span><small>左队</small><b>{rule.left}</b></button>
+      <button className="queue right" onClick={() => classify("RIGHT")}><span>→</span><small>右队</small><b>{rule.right}</b></button>
+    </div>
+  </div>;
+}
+
+function ResultScreen({ result, profile, onAgain, onExit }: { result: RunResult; profile: Profile; onAgain: () => void; onExit: () => void }) {
+  const [shareState, setShareState] = useState("生成挑战链接");
+  const accuracy = Math.round(result.correct / Math.max(1, result.correct + result.errors) * 100);
+  const opponent = result.session.opponent;
+  const opponentScore = opponent || 0;
+  const wonPk = !opponent || result.score >= opponentScore;
   const share = async () => {
-    const text=last?`《排队大师》问我：${last.rule.title}。我把${last.person.name}分到了${last.side==="RIGHT"?"右边":"左边"}，和${last.percent}%的玩家想法一致。你怎么判断？`:`我在《排队大师》判断了 ${judged} 名打工人，最高 ${best} 连击。`;
-    try { if(navigator.share) await navigator.share({title:"排队大师",text,url:location.href}); else await navigator.clipboard.writeText(`${text} ${location.href}`); setShareText("已复制，发给朋友吧"); } catch { setShareText("分享取消"); }
+    const url = new URL(location.href);
+    url.search = `?mode=challenge&seed=${result.session.seed}&score=${result.score}`;
+    const text = `我在《排队大师》拿到 ${result.score} 分、${result.bestCombo} 连击。用同一批打工人来挑战我：`;
+    try {
+      if (navigator.share) await navigator.share({ title: "排队大师 · 好友挑战", text, url: url.toString() });
+      else await navigator.clipboard.writeText(`${text} ${url}`);
+      setShareState("链接已复制，等好友来战");
+    } catch { setShareState("分享取消"); }
+  };
+  return <div className="result-screen scroll">
+    <div className={`result-badge ${result.won ? "win" : "lose"}`}>{result.won ? "通关" : "再试一次"}</div>
+    <h1>{opponent ? (wonPk ? "你把对手安排明白了" : "对手暂时领先") : result.won ? "这队排得有点水平" : "队伍还需要抢救"}</h1>
+    <div className="stars-earned">{"★".repeat(result.stars)}{"☆".repeat(3 - result.stars)}</div>
+    <div className="result-grid">
+      <div><b>{result.score}</b><small>本局得分</small></div><div><b>{accuracy}%</b><small>准确率</small></div><div><b>{result.bestCombo}</b><small>最高连击</small></div>
+    </div>
+    {opponent && <div className="duel-card"><div><small>你的成绩</small><b>{result.score}</b></div><strong>VS</strong><div><small>对手成绩</small><b>{opponentScore}</b></div></div>}
+    {result.last && <div className="dispute-card">
+      <div className="mini-person"><PersonArt person={result.last.person} mini /></div>
+      <div><small>本局争议最大</small><h2>{result.last.rule.title}</h2><p>你和 <b>{result.last.percent}%</b> 的玩家想法一致</p></div>
+    </div>}
+    <div className="reward-strip"><span>本局奖励</span><b>🪙 {result.won ? 30 + result.stars * 10 : 10}</b><small>办公室和图鉴进度已保存</small></div>
+    <button className="primary" onClick={share}>{shareState}</button>
+    <div className="result-actions"><button onClick={onAgain}>{opponent && !wonPk ? "立即复仇" : "再来一局"}</button><button onClick={onExit}>返回首页</button></div>
+    <small className="storage-note">当前为 H5 验证版：成绩保存在本机浏览器。</small>
+  </div>;
+}
+
+const dailyPrompts = [
+  { title: "他是在认真工作，还是在假装认真？", left: "认真工作", right: "假装认真", rule: rules[9] },
+  { title: "他真想加班，还是在等老板先走？", left: "真心加班", right: "等老板走", rule: rules[10] },
+  { title: "他会默默解决，还是把问题甩给同事？", left: "默默解决", right: "准备甩锅", rule: rules[8] },
+];
+
+function DailyScreen({ profile, update }: { profile: Profile; update: (next: Profile) => void }) {
+  const key = todayKey();
+  const choices = profile.daily[key] || [];
+  const [active, setActive] = useState(Math.min(choices.length, 2));
+  const person = makePerson(Number(key.replaceAll("-", "")) % 10000, active + 40);
+  const prompt = dailyPrompts[active];
+  const selected = choices[active];
+  const voteRight = 55 + Math.floor(seeded(person.id + active) * 16);
+  const choose = (side: Side) => {
+    if (selected) return;
+    const nextChoices = [...choices]; nextChoices[active] = side;
+    update({ ...profile, coins: profile.coins + 10, daily: { ...profile.daily, [key]: nextChoices } });
+  };
+  const completed = choices.length >= 3;
+  return <div className="daily-screen scroll">
+    <div className="page-heading"><span>每日 3 题 · {key}</span><h1>今日全民判断</h1><p>先做选择，才能看到“全服”倾向。没有标准答案，只有不同直觉。</p></div>
+    <div className="daily-dots">{dailyPrompts.map((_, i) => <button key={i} className={i === active ? "active" : ""} onClick={() => setActive(i)}>{choices[i] ? "✓" : i + 1}</button>)}</div>
+    <div className="daily-card">
+      <div className="question-tag">第 {active + 1} 题 · 荒诞职场观察</div>
+      <h2>{prompt.title}</h2>
+      <div className="daily-person"><PersonArt person={person} /></div>
+      {!selected ? <div className="daily-options"><button onClick={() => choose("LEFT")}>{prompt.left}</button><button onClick={() => choose("RIGHT")}>{prompt.right}</button></div>
+        : <div className="vote-result">
+          <b>你选择了：{selected === "LEFT" ? prompt.left : prompt.right}</b>
+          <div><i style={{ width: `${100 - voteRight}%` }} /><span>{prompt.left} {100 - voteRight}%</span></div>
+          <div className="right-vote"><i style={{ width: `${voteRight}%` }} /><span>{prompt.right} {voteRight}%</span></div>
+          <p>{(selected === "RIGHT" ? voteRight : 100 - voteRight) < 35 ? "你站在少数派一边。明天回来，也许新线索会让你翻盘。" : "你的直觉与今天的多数玩家一致。"}</p>
+        </div>}
+    </div>
+    {selected && active < 2 && <button className="primary" onClick={() => setActive(active + 1)}>下一道判断</button>}
+    {completed && <div className="personality"><span>今日判断人格</span><h2>清醒的摸鱼侦探</h2><p>你善于从动作里找线索，也愿意在关键时刻站到少数派一边。</p></div>}
+  </div>;
+}
+
+function PkScreen({ profile, challenge, start }: { profile: Profile; challenge?: { seed: number; score: number }; start: (session: Session) => void }) {
+  const level = levels[14];
+  const quick = () => start({ mode: "ranked", level, seed: Date.now() % 99991, opponent: 1350 + Math.floor(Math.random() * 1150) });
+  const friend = () => start({ mode: "challenge", level, seed: challenge?.seed || Date.now() % 99991, opponent: challenge?.score || 1880 });
+  return <div className="pk-screen scroll">
+    <div className="page-heading"><span>同题 · 同序列 · 固定种子</span><h1>{challenge ? "朋友向你发起挑战" : "异步好友 PK"}</h1><p>不用同时在线。双方面对完全相同的小人和规则，先比得分，再比连击。</p></div>
+    {challenge ? <div className="challenge-ticket"><span>好友成绩</span><b>{challenge.score}</b><small>接受后将使用种子 #{challenge.seed}</small><button className="primary" onClick={friend}>接受挑战</button></div>
+      : <>
+        <div className="pk-visual"><div><PersonArt person={makePerson(88)} /><b>你</b></div><strong>VS</strong><div><PersonArt person={makePerson(99)} /><b>幽灵对手</b></div></div>
+        <div className="pk-rules"><b>胜负顺序</b><span>① 得分　② 最大连击　③ 准确率</span><small>幽灵对手来自模拟历史成绩，无需等待匹配。</small></div>
+        <button className="primary" onClick={quick} disabled={profile.tickets <= 0}><b>{profile.tickets > 0 ? "快速匹配" : "今日挑战券用完"}</b><small>剩余挑战券 {profile.tickets}/5</small></button>
+        <button className="secondary" onClick={friend}>试玩好友挑战</button>
+      </>}
+  </div>;
+}
+
+function RankScreen({ profile, start }: { profile: Profile; start: () => void }) {
+  const tier = tierIndex(profile.rankPoints);
+  const progress = profile.rankPoints % 100;
+  return <div className="rank-screen scroll">
+    <div className="rank-emblem">🏆<i>{tier + 1}</i></div><span className="season-tag">第一赛季 · 互联网大厂</span>
+    <h1>{tierNames[tier]}</h1><p>本周再赢 <b>{Math.ceil((100 - progress) / 24)}</b> 局即可晋级</p>
+    <div className="rank-progress"><i style={{ width: `${progress}%` }} /><span>{profile.rankPoints} / {(tier + 1) * 100}</span></div>
+    <div className="season-list">
+      <div><span>本周目标</span><b>赢得 3 场幽灵赛</b><i>1/3</i></div>
+      <div><span>晋级奖励</span><b>“秩序主管”头像框</b><i>🎁</i></div>
+      <div><span>赛季剩余</span><b>18 天 07 小时</b><i>⏳</i></div>
+    </div>
+    <button className="primary" disabled={!profile.tickets} onClick={start}><b>开始排位</b><small>消耗 1 张挑战券 · 剩余 {profile.tickets}</small></button>
+    <p className="fair-note">竞技题目完全一致，装饰和办公室等级不会影响胜负。</p>
+  </div>;
+}
+
+function OfficeScreen({ profile, update }: { profile: Profile; update: (next: Profile) => void }) {
+  const costs = [0, 180, 360, 720, 1200];
+  const max = profile.officeLevel >= 5;
+  const upgrade = () => {
+    const cost = costs[profile.officeLevel];
+    if (!max && profile.coins >= cost) update({ ...profile, coins: profile.coins - cost, officeLevel: profile.officeLevel + 1 });
+  };
+  return <div className="office-screen scroll">
+    <div className="page-heading"><span>视觉成长 · 不加竞技数值</span><h1>我的排队管理中心</h1><p>通关赚金币，把破旧前台慢慢改成首席判断官办公室。</p></div>
+    <div className={`office-view level-${profile.officeLevel}`}>
+      <div className="office-window">☁️</div><div className="desk">▤<i>☕</i></div><div className="chair">♟</div>
+      {profile.officeLevel >= 2 && <div className="plant">🌿</div>}
+      {profile.officeLevel >= 3 && <div className="gate">智能<br />闸机</div>}
+      {profile.officeLevel >= 4 && <div className="screen">排队<br />数据</div>}
+      {profile.officeLevel >= 5 && <div className="trophy">🏆</div>}
+      <span>办公室 Lv.{profile.officeLevel}</span>
+    </div>
+    <button className="primary" disabled={max || profile.coins < costs[profile.officeLevel]} onClick={upgrade}>
+      <b>{max ? "已达到最高等级" : "升级办公室"}</b>
+      <small>{max ? "首席判断官已就位" : `需要 ${costs[profile.officeLevel]} 金币 · 当前 ${profile.coins}`}</small>
+    </button>
+    <div className="collection-title"><div><span>人物图鉴</span><h2>{profile.collection.length}/{collectionNames.length} 已发现</h2></div><small>正确分类时随机解锁</small></div>
+    <div className="collection-grid">{collectionNames.map((name, i) => {
+      const found = profile.collection.includes(name);
+      return <div className={found ? "found" : ""} key={name}><i>{found ? ["☕", "📱", "🎒", "🤓", "👤", "💻", "🧳", "😶"][i] : "?"}</i><b>{found ? name : "尚未发现"}</b><small>{found ? `全服误判率 ${38 + i * 5}%` : "继续主线寻找"}</small></div>;
+    })}</div>
+  </div>;
+}
+
+export default function App() {
+  const [profile, setProfile] = useState<Profile>(() => typeof localStorage === "undefined" ? defaultProfile : loadProfile());
+  const [screen, setScreen] = useState<Screen>("home");
+  const [session, setSession] = useState<Session>();
+  const [result, setResult] = useState<RunResult>();
+  const [challenge, setChallenge] = useState<{ seed: number; score: number }>();
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    if (query.get("mode") === "challenge") {
+      const seed = Number(query.get("seed")), score = Number(query.get("score"));
+      if (seed && score) { setChallenge({ seed, score }); setScreen("pk"); }
+    }
+  }, []);
+  const updateProfile = useCallback((next: Profile) => { setProfile(next); saveProfile(next); }, []);
+  const go = (next: Screen) => { setScreen(next); if (next === "home") history.replaceState({}, "", location.pathname); };
+  const begin = (next: Session) => {
+    if ((next.mode === "ranked" || next.mode === "challenge") && profile.tickets > 0) updateProfile({ ...profile, tickets: profile.tickets - 1 });
+    setSession(next); setResult(undefined); setScreen("play");
+  };
+  const complete = (run: RunResult) => {
+    const reward = run.won ? 30 + run.stars * 10 : 10;
+    const currentStars = profile.stars[run.session.level.id] || 0;
+    const person = makePerson(run.session.seed, run.correct + run.errors);
+    const collectible = collectionFor(person);
+    const collection = profile.collection.includes(collectible) ? profile.collection : [...profile.collection, collectible];
+    const rankedWin = !!run.session.opponent && run.score >= run.session.opponent;
+    const next: Profile = {
+      ...profile,
+      coins: profile.coins + reward,
+      totalGames: profile.totalGames + 1,
+      collection,
+      stars: run.session.mode === "campaign" ? { ...profile.stars, [run.session.level.id]: Math.max(currentStars, run.stars) } : profile.stars,
+      bestScores: { ...profile.bestScores, [run.session.level.id]: Math.max(profile.bestScores[run.session.level.id] || 0, run.score) },
+      rankPoints: run.session.mode === "campaign" ? profile.rankPoints : Math.max(0, profile.rankPoints + (rankedWin ? 24 : -8)),
+    };
+    updateProfile(next); setResult(run); setScreen("result");
   };
 
   return <main className="game-shell">
-    <div className="scenery" aria-hidden="true"><i/><i/><i/></div>
+    <div className="scenery" aria-hidden="true"><i /><i /><i /></div>
     <section className="phone-stage">
-      <header className="brandbar"><div className="logo">排</div><div><strong>排队大师</strong><small>荒诞职场分类中心</small></div><button aria-label="音效已开启">♫</button></header>
-      {screen==="intro" && <div className="intro">
-        <div className="stamp">今日上岗</div>
-        <div className="intro-art"><PersonArt person={makePerson(26)}/><div className="bubble">领导，这人<br/>该去哪队？</div></div>
-        <h1>别想太久，<br/><em>凭感觉排！</em></h1>
-        <p>前半局看帽子和咖啡，后半局判断谁在摸鱼。模糊题不扣分，只看大家怎么选。</p>
-        <div className="howto"><span>← 左滑</span><i>拖动人物</i><span>右滑 →</span></div>
-        <button className="primary" onClick={start}><b>立即上岗</b><small>一局 60 秒</small></button>
-        <div className="daily"><b>今日全民判断</b> 他是在认真工作，还是假装认真？</div>
-      </div>}
-      {screen==="play" && <div className="play">
-        <div className="stats"><div><small>秩序值</small><div className="bar"><i style={{width:`${order}%`}}/></div></div><div className="timer"><b>{time}</b><small>秒</small></div><div className="score"><small>得分</small><b>{score.toLocaleString()}</b></div></div>
-        <div className={`rule ${rule.subjective?"subjective":""}`}><span>{rule.stage}</span><h2>{rule.title}</h2><p>{rule.hint}</p></div>
-        <div className="work-zone">
-          {combo>=2&&<div className="combo"><b>{combo}</b> 连击 <i>×{combo>=10?3:combo>=5?2:1}</i></div>}
-          <div className={`person-card ${flight==="LEFT"?"fly-left":flight==="RIGHT"?"fly-right":""}`}
-            onPointerDown={e=>{dragX.current=e.clientX;e.currentTarget.setPointerCapture(e.pointerId);}}
-            onPointerUp={e=>{if(dragX.current===null)return;const d=e.clientX-dragX.current;dragX.current=null;if(Math.abs(d)>36)classify(d>0?"RIGHT":"LEFT");}}>
-            <PersonArt person={person}/>
-            <div className="clues">{person.hat&&<span>帽子</span>}{person.glasses&&<span>眼镜</span>}{person.coffee&&<span>咖啡</span>}{person.laptop&&<span>电脑</span>}{person.phone&&<span>手机</span>}</div>
-            <small>按住我，向左或向右滑</small>
-          </div>
-          {feedback&&<div className={`feedback ${feedback.kind}`}>{feedback.text}</div>}
-        </div>
-        <div className="queues">
-          <button className="queue left" onClick={()=>classify("LEFT")} aria-label={`分到左边：${rule.left}`}><span>←</span><small>左队 · {counts[0]}人</small><b>{rule.left}</b></button>
-          <button className="queue right" onClick={()=>classify("RIGHT")} aria-label={`分到右边：${rule.right}`}><span>→</span><small>右队 · {counts[1]}人</small><b>{rule.right}</b></button>
-        </div>
-      </div>}
-      {screen==="result" && <div className="result">
-        <div className="result-title"><span>下班结算单</span><h1>{order>0?"今天队伍还算整齐":"分类中心乱成一锅粥"}</h1></div>
-        <div className="grade">{score>=2800?"S":score>=1800?"A":score>=900?"B":"C"}<small>分类专员</small></div>
-        <div className="result-stats"><div><b>{score}</b><small>本局得分</small></div><div><b>{judged}</b><small>判断人数</small></div><div><b>{best}</b><small>最高连击</small></div></div>
-        {last?<div className="dispute"><i className="tape"/><div className="mini-person"><PersonArt person={last.person} mini/></div><div><small>本局争议判断</small><h2>{last.rule.title}</h2><p>你选择：<b>{last.side==="RIGHT"?last.rule.right:last.rule.left}</b></p></div><div className="vote"><i style={{width:`${last.percent}%`}}/><b>{last.percent}%</b><span>玩家和你想法一致</span></div></div>:<div className="dispute empty"><b>你下班得太早了</b><span>坚持到后半局，就会遇到全民争议题。</span></div>}
-        <p className="note">{disputed?`遇到 ${disputed} 次争议：没有标准答案，只有不同的打工人直觉。`:"再坚持一会儿，后半局的问题会逐渐离谱。"}</p>
-        <button className="primary share" onClick={share}>{shareText}</button><button className="again" onClick={start}>再排一局</button>
-      </div>}
+      {screen !== "play" && <TopBar profile={profile} onHome={() => go("home")} title={screen === "home" ? undefined : screen === "map" ? "主线闯关" : screen === "daily" ? "今日判断" : screen === "pk" ? "好友 PK" : screen === "rank" ? "排位赛" : screen === "office" ? "我的办公室" : "结算中心"} />}
+      {screen === "home" && <HomeScreen profile={profile} go={go} />}
+      {screen === "map" && <MapScreen profile={profile} onPlay={level => begin({ mode: "campaign", level, seed: level.id * 2027 + 17 })} />}
+      {screen === "play" && session && <PlayScreen key={`${session.seed}-${profile.totalGames}`} session={session} onFinish={complete} />}
+      {screen === "result" && result && <ResultScreen result={result} profile={profile} onAgain={() => begin(result.session)} onExit={() => go(result.session.mode === "campaign" ? "map" : "home")} />}
+      {screen === "daily" && <DailyScreen profile={profile} update={updateProfile} />}
+      {screen === "pk" && <PkScreen profile={profile} challenge={challenge} start={begin} />}
+      {screen === "rank" && <RankScreen profile={profile} start={() => begin({ mode: "ranked", level: levels[20], seed: Date.now() % 99991, opponent: 1500 + Math.floor(Math.random() * 1200) })} />}
+      {screen === "office" && <OfficeScreen profile={profile} update={updateProfile} />}
     </section>
     <p className="desktop-tip">电脑端可用 A / D 或 ← / → 快速分类</p>
   </main>;

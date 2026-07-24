@@ -1,0 +1,9 @@
+/build/
+/temp/
+/library/
+/local/
+/profiles/
+/node_modules/
+/.creator/
+*.log
+.DS_Store

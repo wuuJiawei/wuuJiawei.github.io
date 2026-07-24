@@ -1,0 +1,17 @@
+{
+  "name": "queue-master-cocos",
+  "uuid": "c1b7ce14-7b0a-4d31-b948-70e58a7b71d3",
+  "version": "2.0.0",
+  "description": "排队大师 - 微信小游戏 / 抖音小游戏双平台 Cocos Creator 项目",
+  "creator": {
+    "version": "3.8.8"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --target ES2020 --module ESNext --moduleResolution Bundler --experimentalDecorators --strict --skipLibCheck node_modules/@cocos/creator-types/engine/cc.d.ts assets/scripts/*.ts",
+    "validate": "node tools/validate.mjs && npm run typecheck"
+  },
+  "devDependencies": {
+    "@cocos/creator-types": "^3.8.7",
+    "typescript": "^5.9.3"
+  }
+}

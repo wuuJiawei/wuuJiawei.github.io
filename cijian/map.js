@@ -1,81 +1,24 @@
-const powers = {
-  "九皋宗": {
-    kind: "超级宗门", subtitle: "东洲 · 两超之一", color: "#3f6758",
-    summary: "以高度集中的本宗体系控制东洲，人口、资源、动员与战略纵深冠绝天下；综合实力略逊于天镜宫。",
-    traits: ["观山正法", "镇岳印控制者", "九府与三十六附宗"],
-    relation: "对外宣称维护传统秩序，内部围绕镇岳代价逐步分裂。",
-    story: "沈青、顾天行与苏清漪的师门；终局山门建于镇岳主枢之上。"
-  },
-  "天镜宫": {
-    kind: "超级宗门", subtitle: "西洲 · 两超之一", color: "#506680",
-    summary: "高端修士、法器、贸易与情报网络更强，以核心宫门、自治属宗和跨洲盟友构成天下第一体系。",
-    traits: ["十二属宗", "海路与灵票", "玄阴一脉"],
-    relation: "以开放和反垄断为名争夺镇岳规则，但强硬派只想改变牺牲方向。",
-    story: "阿阮与温九出身其边地体系；第三卷与九皋宗共同追夺阵图。"
-  },
-  "列宿盟": {
-    kind: "大型联盟", subtitle: "中洲 · 第三极", color: "#9a7441",
-    summary: "十二个独立大宗共同组成。总量接近两超，却没有永久共主，统一行动能力远弱于账面实力。",
-    traits: ["共同议席", "灵票结算", "防御盟约"],
-    relation: "两超长期争取其成员与表决，是舆论、贸易和情报交锋中心。",
-    story: "顾天行原计划在列宿大会公开镇岳事故名单。"
-  },
-  "朔风盟": {
-    kind: "区域联盟", subtitle: "北境 · 边塞群宗", color: "#6f7880",
-    summary: "北境宗门为抵御兽潮与代理战争结成的战盟，人数不多，实战经验极强。",
-    traits: ["重甲与骑战", "寒铁矿脉", "立场反复"],
-    relation: "军需依赖九皋宗，矿石贸易却由天镜宫掌握。",
-    story: "第二卷边境血案的军械来源之一，也是双方互相嫁祸的灰区。"
-  },
-  "苍梧会": {
-    kind: "区域联盟", subtitle: "南境 · 药商联合", color: "#738858",
-    summary: "药门、商会和山中小宗共同维持的松散联合，掌握灵药、医者与南方商路。",
-    traits: ["药谷", "商路", "中立医契"],
-    relation: "避免明确站队，以医药与贸易同时制衡两超。",
-    story: "阿阮曾借苍梧商路转移流民与证据。"
-  },
-  "听潮盟": {
-    kind: "区域联盟", subtitle: "东南海域 · 海宗", color: "#477a7c",
-    summary: "由沿海与岛屿宗门组成，控制远洋航路、盐铁运输与地下走私网络。",
-    traits: ["海运", "岛屿据点", "走私情报"],
-    relation: "名义亲近天镜宫，实际以航路独立为最高利益。",
-    story: "第三卷中，阵图副本经听潮盟船队送往民间。"
-  },
-  "大泽七门": {
-    kind: "小型联盟", subtitle: "东、西夹缝 · 缓冲地", color: "#7f715b",
-    summary: "七个弱小宗门为避免被吞并而抱团，缺少强者，却熟悉湿地、旧阵与边境暗道。",
-    traits: ["湿地旧阵", "流民聚居", "无固定盟主"],
-    relation: "是两超代理冲突最频繁的地区，也是最先承担阵势代价的人。",
-    story: "温九查出的镇岳暗道由大泽旧工匠后人保存。"
-  }
-};
-
-const pins = document.querySelectorAll(".map-pin");
-const panel = document.querySelector(".power-panel");
-
-function selectPower(pin) {
-  const name = pin.getAttribute("aria-label").replace("查看", "");
-  const power = powers[name];
-  if (!power || !panel) return;
-  pins.forEach((item) => item.classList.remove("active"));
-  pin.classList.add("active");
-  panel.style.setProperty("--accent", power.color);
-  panel.querySelector("small").textContent = power.kind;
-  panel.querySelector("h2").textContent = name;
-  panel.querySelector(".power-panel-head p").textContent = power.subtitle;
-  panel.querySelector(".power-summary").textContent = power.summary;
-  panel.querySelector(".trait-list").innerHTML = power.traits.map((trait) => `<span>◇ ${trait}</span>`).join("");
-  const details = panel.querySelectorAll("dd");
-  details[0].textContent = power.relation;
-  details[1].textContent = power.story;
-}
-
-pins.forEach((pin) => {
-  pin.addEventListener("click", () => selectPower(pin));
-  pin.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      selectPower(pin);
-    }
-  });
-});
+(() => {
+const world=[
+{name:'九皋宗',kind:'超级宗门',subtitle:'东洲 · 两超之一',color:'#3f6758',summary:'控制东洲本宗、九府与三十六附宗；综合实力略逊于天镜宫。',traits:['观山正法','镇岳印传承','集中控制'],relation:'天下权力主体，在行旅图中落为九皋山门、洗剑池与镇岳主枢。',story:'主线唯一深入书写的超级宗门。'},
+{name:'天镜宫',kind:'超级宗门',subtitle:'西洲 · 两超之一',color:'#506680',summary:'高阶修士、法宝铸造、贸易与情报更强。',traits:['十二属宗','法宝铸造','玄阴一脉'],relation:'主角不去西洲，其影响通过人物和追兵抵达。',story:'阿阮、温九与玄阴一脉的背景。'},
+{name:'列宿盟',kind:'大型联盟',subtitle:'中洲 · 第三极',color:'#9a7441',summary:'十二个独立大宗组成，总量接近两超，行动却较松散。',traits:['共同议席','防御盟约','内部松散'],relation:'提供公开真相的远方可能。',story:'顾天行未能送达名单的目的地。'},
+{name:'朔风盟',kind:'区域联盟',subtitle:'北境 · 边塞群宗',color:'#6f7880',summary:'北境战盟，寒铁与实战能力强。',traits:['寒铁矿脉','重甲骑战','军械来源'],relation:'通过军械和战报进入东洲。',story:'大泽血案的一条支线来源。'},
+{name:'苍梧会',kind:'区域联盟',subtitle:'南境 · 药商联合',color:'#738858',summary:'掌握灵药、医者与南方商路。',traits:['药谷','商路','中立医契'],relation:'通过药材、医者和商队进入主线。',story:'阿阮借其商路转移流民。'},
+{name:'听潮盟',kind:'区域联盟',subtitle:'东南海域 · 海宗',color:'#477a7c',summary:'控制远洋航路、盐铁运输与走私情报。',traits:['海运','岛屿据点','走私情报'],relation:'只承担阵图外传与终局余波。',story:'不新增沈青的海上冒险线。'},
+{name:'大泽七门',kind:'小型联盟',subtitle:'两超夹缝 · 缓冲地',color:'#7f715b',summary:'七个弱小宗门抱团自保，熟悉湿地旧阵。',traits:['湿地旧阵','流民聚居','无固定盟主'],relation:'两张地图真正重叠的区域。',story:'边隘、旧阵井与温九线从这里展开。'}];
+const journey=[
+{name:'青篾村',kind:'主线起点',subtitle:'东洲南麓 · 故乡',color:'#58735f',summary:'竹海深处的小村，距九皋山门七日脚程。',traits:['沈篾匠','未名青竹','阵脉副枢'],relation:'宏大秩序落到普通人身上的最小切面。',story:'洗剑池共鸣暴露竹源，父亲因此惨死。'},
+{name:'九皋山门',kind:'宗门中心',subtitle:'东洲腹地 · 核心舞台',color:'#3f6758',summary:'问心山道、外门群峰、掌门大殿与后山旧观集中于此。',traits:['问心山道','外门群峰','掌门大殿'],relation:'天下地图上的九皋宗在主线中的具体空间。',story:'大部分门内故事与终局发生地。'},
+{name:'洗剑池',kind:'修行节点',subtitle:'九皋后山 · 禁地边缘',color:'#66807c',summary:'池水与镇岳阵脉相通，暴露未名传导阵力的异常。',traits:['基础正法','阵力共鸣','工匠刻痕'],relation:'连接个人修行、故乡灾难与天下大阵。',story:'让沈青从此能被镇岳印感知。'},
+{name:'大泽边隘',kind:'天下接口',subtitle:'东洲西缘 · 缓冲地',color:'#7f715b',summary:'两超势力接壤处，人物、货物与传闻由此进入。',traits:['大泽七门','流民聚落','两超暗线'],relation:'对应天下舆图的大泽七门。',story:'阿阮、温九与边境血案登场。'},
+{name:'旧阵井',kind:'实力质变',subtitle:'大泽东南 · 废弃阵工道',color:'#83664e',summary:'无名工匠留下的维修入口，沈青被困二十一日。',traits:['工匠姓名','体外经脉','听受还势'],relation:'不是秘境，只是被遗忘的阵工道。',story:'苏清漪死后，沈青被迫形成未名剑路。'},
+{name:'竹林小筑',kind:'悲剧中心',subtitle:'青篾村旧址外 · 短暂归处',color:'#8a6d45',summary:'沈青与阿阮收留流民、短暂生活的地方。',traits:['热饭竹碗','半枚铜钱','大日余息'],relation:'宏大争夺追到最小生活空间。',story:'阿阮在此替沈青剥离阵脉标记。'},
+{name:'镇岳主枢',kind:'终局地点',subtitle:'九皋山门之下 · 终点',color:'#8b3431',summary:'镇岳大阵核心，与掌门法宝镇岳印相连但并非同物。',traits:['大阵核心','历代裂口','山门承重'],relation:'镇岳印是调阵钥匙，主枢才是大阵核心。',story:'终局先碎印，再沿裂口破阵。'}];
+const journeySvg='<svg class="world-svg" viewBox="0 0 920 600" role="img" aria-label="沈青在东洲南麓的主线行旅图"><defs><pattern id="journey-waves" width="30" height="12" patternUnits="userSpaceOnUse"><path d="M0 8 Q7 2 15 8 T30 8" fill="none" stroke="#71857b" stroke-opacity=".15"></path></pattern></defs><rect width="920" height="600" fill="url(#journey-waves)"></rect><path class="land east" d="M52 476C118 389 109 260 198 174c87-83 195-56 274-117 112-87 298-23 365 83 69 110 6 248-93 322-123 93-260 56-371 91-120 38-245 21-321-77Z"></path><path class="river-line" d="M86 492c156-65 219-5 339-55 110-46 149-150 257-195 58-24 106-10 157 13"></path><path class="mountain-line" d="M476 70c60 33 102 89 125 158l88-105 88 128 93-145"></path><path class="fault-line" d="M700 122c-41 82-91 111-138 165-53 60-103 112-165 153-66 44-137 44-214 48"></path><path class="journey-line" d="M156 454C241 427 222 309 188 274c74 9 91 36 130 63 69-36 165-73 266-123 48-25 71-61 106-84M318 337c-15 67-41 100-68 133M250 470c160-9 276-73 454-276"></path><text x="78" y="100" class="region-name">东洲南麓</text>'+[['青篾村',156,454],['九皋山门',690,130],['洗剑池',584,214],['大泽边隘',188,274],['旧阵井',318,337],['竹林小筑',250,470],['镇岳主枢',704,194]].map((x,i)=>'<g class="map-pin '+(i===0?'active':'')+'" transform="translate('+x[1]+' '+x[2]+')" role="button" tabindex="0" aria-label="查看'+x[0]+'"><circle r="'+(i===0?'23':'18')+'"></circle><path d="M0-9 8 7H-8Z"></path><text y="39">'+x[0]+'</text></g>').join('')+'<g class="map-key"><path d="M48 537h90"></path><text x="48" y="562">主线范围 · 七日山路为一程</text></g></svg>';
+const canvas=document.querySelector('.map-canvas'),panel=document.querySelector('.power-panel'),worldSvg=canvas.querySelector('.world-svg').outerHTML,buttons=[...document.querySelectorAll('.map-mode-switch button')];let data=world;
+function show(i){const p=data[i],pins=[...canvas.querySelectorAll('.map-pin')];pins.forEach((n,j)=>{n.classList.toggle('active',i===j);n.querySelector('circle').setAttribute('r',i===j?'23':'18')});panel.style.setProperty('--accent',p.color);panel.querySelector('small').textContent=p.kind;panel.querySelector('h2').textContent=p.name;panel.querySelector('.power-panel-head p').textContent=p.subtitle;panel.querySelector('.power-summary').textContent=p.summary;panel.querySelector('.trait-list').innerHTML=p.traits.map(x=>'<span>◇ '+x+'</span>').join('');const dd=panel.querySelectorAll('dd');dd[0].textContent=p.relation;dd[1].textContent=p.story;}
+function bind(){[...canvas.querySelectorAll('.map-pin')].forEach((pin,i)=>{pin.addEventListener('click',()=>show(i));pin.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(i)}})})}
+function mode(i){buttons.forEach((b,j)=>b.classList.toggle('active',i===j));data=i===0?world:journey;canvas.querySelector('.world-svg').outerHTML=i===0?worldSvg:journeySvg;bind();show(0)}
+buttons.forEach((b,i)=>b.addEventListener('click',()=>mode(i)));bind();
+})();

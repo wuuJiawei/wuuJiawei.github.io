@@ -1,13 +1,16 @@
 # Third-party assets
 
 ## Open Doodles
-手绘角色来自 Pablo Stanley 的 Open Doodles，CC0。
 
-包含：
-- `assets/open-doodles/moshing-small.webp`
-- `assets/open-doodles/sitting-reading-small.webp`
+- Creator: Pablo Stanley
+- Source: https://www.opendoodles.com / https://www.openpeeps.com
+- License: CC0 / public domain
+- Use: hand-drawn focus and celebration characters
+- Local files: `assets/open-doodles/`
+- The files are stored locally. The Web prototype uses CSS color treatment so the source artwork stays reusable and the deployed page has no third-party image CDN dependency.
 
-Source: https://www.opendoodles.com/
+Open Peeps/Open Doodles are published for free personal and commercial use under CC0. No attribution is required, but provenance is kept here for project maintenance.
 
 ## Rive
-原型运行时通过 URL 加载 Rive Community 示例文件；正式产品上线前应替换为自有 `.riv` 角色与状态机资产，并在仓库中固定版本与许可记录。
+
+No third-party Rive community animation is currently shipped in the product UI. The earlier remote animated-emoji runtime file was intentionally removed to avoid an unstable external dependency and a mismatched visual style.

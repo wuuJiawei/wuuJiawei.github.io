@@ -1,1 +1,20 @@
-export const colors={bg:'#171713',panel:'#211f1a',text:'#F7F2E8',muted:'#AAA394',line:'rgba(255,255,255,.09)',gold:'#E8C578',goldSoft:'#F6DDA3',wall:'#D7D0BF',wallDeep:'#B9B5A5',wood:'#8E684A',woodDark:'#674933',floor:'#A77E60'};
+export const colors = {
+  bg: '#F3EFE6',
+  paper: '#FFF9EE',
+  paperDeep: '#EAE2D3',
+  ink: '#2A2823',
+  muted: '#777166',
+  faint: '#A8A092',
+  line: '#D8CEBC',
+  terracotta: '#D37152',
+  terracottaDeep: '#9F503B',
+  forest: '#445A4A',
+  forestDeep: '#29362E',
+  ochre: '#D4A552',
+  night: '#29332D',
+  nightDeep: '#1D2521',
+  wood: '#9A7255',
+  woodDark: '#70503B',
+  floor: '#B28C6D',
+  white: '#FFFDF7',
+};

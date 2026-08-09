@@ -1,6 +1,14 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useRive } from '@rive-app/react-webgl2';
-const URL='https://public.rive.app/community/runtime-files/1714-4322-rives-animated-emojis.riv';
-export function RiveCompanion(){const {RiveComponent}=useRive({src:URL,stateMachines:'controller',autoplay:true});return <View style={s.wrap}><RiveComponent style={{width:'100%',height:'100%'}}/></View>}
-const s=StyleSheet.create({wrap:{width:112,height:112,overflow:'hidden'}});
+import { View } from 'react-native';
+
+/**
+ * Reserved Rive slot.
+ *
+ * The previous prototype loaded a random community animation from a remote URL,
+ * which broke the product's art direction and made the build depend on a third party.
+ * Keep the runtime dependency available, but only wire this component again when a
+ * reviewed `.riv` asset is checked into `assets/rive/` with its license documented.
+ */
+export function RiveCompanion() {
+  return <View />;
+}

@@ -1,0 +1,3 @@
+{
+  "expo": {"name":"Make it Count","slug":"make-it-count","version":"0.1.0","orientation":"portrait","userInterfaceStyle":"dark","ios":{"supportsTablet":false,"bundleIdentifier":"com.prototype.makeitcount"},"android":{"package":"com.prototype.makeitcount"},"web":{"bundler":"metro"}}
+}

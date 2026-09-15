@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finder Pro Demo</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ececec;
+      --window: rgba(248,248,248,.84);
+      --sidebar: rgba(241,241,241,.82);
+      --content: rgba(255,255,255,.92);
+      --toolbar: rgba(250,250,250,.72);
+      --line: rgba(0,0,0,.085);
+      --line-soft: rgba(0,0,0,.055);
+      --text: rgba(28,28,30,.92);
+      --muted: rgba(60,60,67,.58);
+      --faint: rgba(60,60,67,.36);
+      --blue: #0a84ff;
+      --blue-soft: rgba(10,132,255,.13);
+      --selection: rgba(0,0,0,.085);
+      --hover: rgba(0,0,0,.045);
+      --pill: rgba(118,118,128,.10);
+      --menu: rgba(247,247,247,.86);
+      --shadow: 0 24px 70px rgba(0,0,0,.22), 0 3px 14px rgba(0,0,0,.10);
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161616;
+        --window: rgba(39,39,40,.90);
+        --sidebar: rgba(42,42,43,.82);
+        --content: rgba(30,30,31,.94);
+        --toolbar: rgba(44,44,45,.72);
+        --line: rgba(255,255,255,.10);
+        --line-soft: rgba(255,255,255,.065);
+        --text: rgba(255,255,255,.92);
+        --muted: rgba(235,235,245,.60);
+        --faint: rgba(235,235,245,.34);
+        --blue: #0a84ff;
+        --blue-soft: rgba(10,132,255,.22);
+        --selection: rgba(255,255,255,.12);
+        --hover: rgba(255,255,255,.065);
+        --pill: rgba(118,118,128,.19);
+        --menu: rgba(48,48,50,.88);
+        --shadow: 0 28px 80px rgba(0,0,0,.48), 0 4px 18px rgba(0,0,0,.24);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255,255,255,.78), transparent 32%),
+        linear-gradient(135deg, #d8dbe0 0%, #f0f1f3 50%, #dfe2e6 100%);
+      color: var(--text);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: linear-gradient(135deg, #101113 0%, #232427 48%, #151618 100%); }
+    }
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; background: none; padding: 0; }
+    svg { display:block; }
+
+    #app { height: 100%; display:grid; place-items:center; padding: 26px; }
+    .window {
+      width: min(1460px, calc(100vw - 52px));
+      height: min(920px, calc(100vh - 52px));
+      min-height: 650px;
+      border-radius: 18px;
+      overflow: hidden;
+      display:grid;
+      grid-template-columns: 210px minmax(0,1fr);
+      background: var(--window);
+      border: 1px solid rgba(255,255,255,.58);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(38px) saturate(145%);
+      -webkit-backdrop-filter: blur(38px) saturate(145%);
+    }
+    .sidebar {
+      position:relative;
+      background: var(--sidebar);
+      border-right: 1px solid var(--line-soft);
+      backdrop-filter: blur(28px) saturate(135%);
+      -webkit-backdrop-filter: blur(28px) saturate(135%);
+      overflow:hidden;
+    }
+    .traffic { height: 56px; display:flex; align-items:center; gap:8px; padding: 0 14px; }
+    .traffic i { width:13px; height:13px; border-radius:50%; display:block; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.12); }
+    .traffic .r{background:#ff5f57}.traffic .y{background:#febc2e}.traffic .g{background:#28c840}
+    .sidebar-scroll { height: calc(100% - 56px); overflow:auto; padding: 2px 10px 18px; scrollbar-width:none; }
+    .sidebar-scroll::-webkit-scrollbar{display:none}
+    .section { margin-top: 14px; }
+    .section-title { color:var(--faint); font-size:11px; font-weight:600; padding: 0 8px 5px; letter-spacing:.01em; }
+    .side-row {
+      height: 28px; display:flex; align-items:center; gap:8px; padding:0 8px;
+      border-radius:7px; font-size:13px; line-height:1; margin-bottom:1px;
+    }
+    .side-row:hover{background:var(--hover)}
+    .side-row.active{background:rgba(120,120,128,.14)}
+    .side-row .ico { width:16px; height:16px; display:grid; place-items:center; color:#7b7b80; flex:0 0 auto; }
+    .side-row .ico.blue{color:#2787d9}.side-row .ico.gray{color:#808086}
+    .tag-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto}
+    .side-row .eject { margin-left:auto; color:var(--faint); font-size:11px; }
+    .sidebar-footer{height:32px;display:flex;align-items:center;gap:8px;padding:0 12px;color:var(--muted);font-size:12px}
+
+    .main { min-width:0; display:grid; grid-template-rows:58px minmax(0,1fr); background:var(--content); }
+    .toolbar {
+      display:grid; grid-template-columns:auto minmax(110px,1fr) auto; align-items:center;
+      gap:12px; padding: 0 14px 0 12px;
+      background: var(--toolbar); border-bottom:1px solid var(--line-soft);
+      backdrop-filter: blur(28px) saturate(145%);
+      -webkit-backdrop-filter: blur(28px) saturate(145%);
+    }
+    .toolbar-left,.toolbar-right,.segmented{display:flex;align-items:center;gap:6px}
+    .toolbar-title{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .tool-btn{
+      width:34px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--muted);cursor:default;
+    }
+    .tool-btn:hover{background:var(--hover);color:var(--text)}
+    .tool-btn:active{background:var(--selection)}
+    .tool-btn.disabled{opacity:.28}
+    .segmented{gap:1px;padding:2px;border-radius:10px;background:rgba(118,118,128,.08)}
+    .segmented .tool-btn{width:32px;height:28px;border-radius:8px}
+    .segmented .tool-btn.on{background:rgba(255,255,255,.72);box-shadow:0 1px 3px rgba(0,0,0,.10);color:var(--text)}
+    @media (prefers-color-scheme:dark){.segmented .tool-btn.on{background:rgba(255,255,255,.12)}}
+    .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+    .chev{font-size:10px;margin-left:-2px;color:var(--muted)}
+
+    .workspace { min-height:0; display:grid; grid-template-columns:minmax(0,1fr) 6px minmax(0,1fr); padding:0; background:var(--content); }
+    .divider { position:relative; cursor:col-resize; }
+    .divider::after { content:""; position:absolute; top:0; bottom:0; left:2px; width:1px; background:var(--line-soft); }
+    .pane { min-width:0; min-height:0; display:grid; grid-template-rows:38px minmax(0,1fr); position:relative; }
+    .pane.active::after{
+      content:""; position:absolute; inset:0; border:1.5px solid var(--blue); border-radius:13px; pointer-events:none; z-index:20;
+      box-shadow: inset 0 0 0 .5px rgba(255,255,255,.35);
+    }
+    .pane-bar { height:38px; display:flex;align-items:center;gap:5px;padding:4px 8px;border-bottom:1px solid var(--line-soft); }
+    .mini-btn{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--muted)}
+    .mini-btn:hover{background:var(--hover)}
+    .path-pill{
+      height:28px; flex:1; min-width:0; border-radius:8px; display:flex;align-items:center;gap:7px;
+      padding:0 9px;background:rgba(118,118,128,.07);color:var(--muted);font-size:12px;
+      border:1px solid transparent;
+    }
+    .pane.active .path-pill{background:rgba(10,132,255,.07)}
+    .path-pill .green-dot{width:8px;height:8px;border-radius:50%;background:#52c46c;box-shadow:0 0 0 1px rgba(0,0,0,.05)}
+    .path-pill .crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+    .path-pill .search{margin-left:auto;color:var(--faint)}
+
+    .file-area{min-height:0;overflow:auto;position:relative;padding-bottom:14px;scrollbar-width:thin;scrollbar-color:rgba(120,120,128,.28) transparent}
+    .file-head{
+      position:sticky;top:0;z-index:4;height:26px;display:grid;grid-template-columns:minmax(190px,1.6fr) minmax(125px,.9fr) 80px 110px;
+      align-items:center;background:color-mix(in srgb,var(--content) 94%, transparent);backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--line-soft);font-size:11px;font-weight:600;color:var(--text);
+    }
+    .head-cell{height:17px;padding:1px 10px;border-right:1px solid var(--line-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .head-cell:last-child{border-right:0}
+    .file-list{padding:4px 8px 10px}
+    .file-row{
+      height:25px;display:grid;grid-template-columns:minmax(190px,1.6fr) minmax(125px,.9fr) 80px 110px;align-items:center;
+      border-radius:6px;font-size:12px;color:var(--text);
+    }
+    .file-row:hover{background:var(--hover)}
+    .file-row.selected{background:var(--selection)}
+    .file-row .cell{padding:0 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+    .file-row .name-cell{color:var(--text);display:flex;align-items:center;gap:7px}
+    .disclosure{width:8px;color:var(--faint);font-size:10px;flex:0 0 auto}
+    .file-icon{width:16px;height:14px;position:relative;flex:0 0 auto;border-radius:2px;background:#48a9dc;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.10)}
+    .file-icon.folder::before{content:"";position:absolute;left:1px;top:-3px;width:7px;height:4px;border-radius:2px 2px 0 0;background:#63b7e1}
+    .file-icon.folder.green{background:#45bf67}.file-icon.folder.green::before{background:#67cb80}
+    .file-icon.folder.gray{background:#85858a}.file-icon.folder.gray::before{background:#9b9ba0}
+    .file-icon.file{height:17px;background:#f7f7f8;border:1px solid rgba(0,0,0,.14);border-radius:2px}
+    .file-icon.file::after{content:"";position:absolute;right:1px;top:1px;border-left:4px solid transparent;border-bottom:4px solid rgba(0,0,0,.12)}
+    .file-icon.app{height:16px;border-radius:4px;background:linear-gradient(145deg,#17171a,#36363a);display:grid;place-items:center;color:#ff4b31;font-size:8px;font-weight:800}
+    .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:auto;flex:0 0 auto}
+    .cloud{margin-left:auto;color:var(--faint)}
+    .empty-lines{padding:0 8px}
+    .empty-line{height:22px;border-radius:7px;background:rgba(118,118,128,.055);margin:0 0 20px}
+
+    .context-menu{
+      position:fixed;z-index:1000;width:238px;padding:6px;border-radius:12px;background:var(--menu);
+      border:1px solid rgba(255,255,255,.48);box-shadow:0 16px 44px rgba(0,0,0,.26),0 2px 8px rgba(0,0,0,.10);
+      backdrop-filter:blur(34px) saturate(150%);-webkit-backdrop-filter:blur(34px) saturate(150%);
+      font-size:13px;
+    }
+    .menu-item{height:27px;border-radius:6px;padding:0 8px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+    .menu-item:hover{background:var(--blue);color:white}
+    .menu-item .menu-right{margin-left:auto;color:var(--muted)}
+    .menu-item:hover .menu-right{color:rgba(255,255,255,.8)}
+    .menu-sep{height:1px;background:var(--line);margin:5px 6px}
+    .menu-icon{width:16px;text-align:center;color:var(--muted)}
+    .menu-item:hover .menu-icon{color:white}
+
+    .toast{position:fixed;left:50%;bottom:42px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgba(30,30,30,.78);color:white;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.20);backdrop-filter:blur(20px);z-index:1200}
+    .fade-enter-active,.fade-leave-active{transition:opacity .14s ease,transform .14s ease}.fade-enter-from,.fade-leave-to{opacity:0;transform:translateY(4px)}
+
+    @media (max-width: 980px){
+      #app{padding:10px}.window{width:calc(100vw - 20px);height:calc(100vh - 20px);grid-template-columns:180px minmax(0,1fr)}
+      .toolbar-right .optional{display:none}.workspace{grid-template-columns:minmax(0,1fr)}.divider,.pane:nth-of-type(3){display:none}
+    }
+  </style>
+</head>
+<body>
+<div id="app" @click="closeMenu">
+  <div class="window">
+    <aside class="sidebar">
+      <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+      <div class="sidebar-scroll">
+        <div class="section" v-for="section in sidebar" :key="section.title">
+          <div class="section-title">{{ section.title }}</div>
+          <div class="side-row" v-for="item in section.items" :class="{active:item.label===sidebarActive}" @click.stop="selectSidebar(item)" :key="item.label">
+            <span v-if="item.color" class="tag-dot" :style="{background:item.color,border:item.outline?'1px solid rgba(120,120,128,.5)':'0'}"></span>
+            <span v-else class="ico" :class="item.tone || 'gray'" v-html="icons[item.icon]"></span>
+            <span>{{ item.label }}</span>
+            <span v-if="item.eject" class="eject">⏏</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <button class="tool-btn" v-html="icons.back" title="返回"></button>
+          <button class="tool-btn disabled" v-html="icons.forward" title="前进"></button>
+        </div>
+        <div class="toolbar-title">{{ activeTitle }}</div>
+        <div class="toolbar-right">
+          <div class="segmented optional">
+            <button class="tool-btn" :class="{on:viewMode==='icon'}" @click.stop="viewMode='icon'" v-html="icons.grid"></button>
+            <button class="tool-btn" :class="{on:viewMode==='list'}" @click.stop="viewMode='list'" v-html="icons.list"></button>
+            <button class="tool-btn" :class="{on:viewMode==='column'}" @click.stop="viewMode='column'" v-html="icons.columns"></button>
+          </div>
+          <div class="sep optional"></div>
+          <button class="tool-btn optional" v-html="icons.sort"></button><span class="chev optional">⌄</span>
+          <button class="tool-btn optional" v-html="icons.more"></button>
+          <button class="tool-btn optional" v-html="icons.share"></button>
+          <button class="tool-btn optional" v-html="icons.tag"></button>
+          <div class="sep optional"></div>
+          <button class="tool-btn" v-html="icons.terminal" @click.stop="toastMsg='在 Terminal 中打开 /Users/wuu/projects' ; showToast()"></button>
+          <button class="tool-btn optional" v-html="icons.edit"></button>
+          <button class="tool-btn optional" v-html="icons.swap"></button>
+          <button class="tool-btn" v-html="icons.search"></button>
+          <button class="tool-btn optional" v-html="icons.trash"></button>
+          <span class="toolbar-title optional" style="font-size:12px;font-weight:500;margin-left:4px">默认⌄</span>
+          <button class="tool-btn optional" v-html="icons.split"></button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <file-pane :pane="leftPane" :active="activePane==='left'" :icons="icons" @activate="activePane='left'" @row-menu="openRowMenu" @row-select="selectRow"></file-pane>
+        <div class="divider"></div>
+        <file-pane :pane="rightPane" :active="activePane==='right'" :icons="icons" @activate="activePane='right'" @row-menu="openRowMenu" @row-select="selectRow"></file-pane>
+      </section>
+    </main>
+  </div>
+
+  <div v-if="menu.open" class="context-menu" :style="{left:menu.x+'px',top:menu.y+'px'}" @click.stop>
+    <div class="menu-item" @click="menuAction('打开')"><span class="menu-icon">↗</span><span>打开</span><span class="menu-right">⌘O</span></div>
+    <div class="menu-item"><span class="menu-icon">▣</span><span>打开方式</span><span class="menu-right">›</span></div>
+    <div class="menu-item"><span class="menu-icon">＋</span><span>在新标签页中打开</span></div>
+    <div class="menu-sep"></div>
+    <div class="menu-item" @click="menuAction('复制路径')"><span class="menu-icon">⌘</span><span>复制路径</span><span class="menu-right">⌥⌘C</span></div>
+    <div class="menu-item"><span class="menu-icon">▤</span><span>复制文件名</span></div>
+    <div class="menu-item"><span class="menu-icon">✂</span><span>剪切</span><span class="menu-right">⌘X</span></div>
+    <div class="menu-sep"></div>
+    <div class="menu-item"><span class="menu-icon">›_</span><span>在终端中打开</span><span class="menu-right">›</span></div>
+    <div class="menu-item"><span class="menu-icon">◇</span><span>在编辑器中打开</span><span class="menu-right">›</span></div>
+    <div class="menu-sep"></div>
+    <div class="menu-item"><span class="menu-icon">●</span><span>标签…</span><span class="menu-right">›</span></div>
+    <div class="menu-item"><span class="menu-icon">◉</span><span>快速查看</span><span class="menu-right">Space</span></div>
+    <div class="menu-item"><span class="menu-icon">ⓘ</span><span>显示简介</span><span class="menu-right">⌘I</span></div>
+    <div class="menu-sep"></div>
+    <div class="menu-item"><span class="menu-icon">⌫</span><span>移到废纸篓</span><span class="menu-right">⌘⌫</span></div>
+  </div>
+
+  <transition name="fade"><div v-if="toast" class="toast">{{ toastMsg }}</div></transition>
+</div>
+
+<script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+<script>
+const { createApp, ref, reactive, computed } = Vue;
+
+const icon = (body, size=18, vb='0 0 24 24') => `<svg width="${size}" height="${size}" viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const icons = {
+  back: icon('<path d="M15 18l-6-6 6-6"/>'), forward: icon('<path d="M9 18l6-6-6-6"/>'),
+  grid: icon('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>'),
+  list: icon('<path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>'),
+  columns: icon('<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M10 5v14M15 5v14"/>'),
+  sort: icon('<path d="M4 7h10M4 12h7M4 17h4"/><path d="M17 7v10m0 0l-3-3m3 3l3-3"/>'),
+  more: icon('<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'),
+  share: icon('<path d="M12 16V4m0 0L8 8m4-4l4 4"/><path d="M6 12v7h12v-7"/>'),
+  tag: icon('<path d="M20 13l-7 7-9-9V4h7z"/><circle cx="8" cy="8" r="1"/>'),
+  terminal: icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9l3 3-3 3m6 0h4"/>'),
+  edit: icon('<path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>'),
+  swap: icon('<path d="M7 7h11l-3-3m3 3l-3 3M17 17H6l3 3m-3-3l3-3"/>'),
+  search: icon('<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>'),
+  trash: icon('<path d="M5 7h14M9 7V4h6v3m-8 0l1 13h8l1-13"/>'),
+  split: icon('<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M12 5v14"/>'),
+  desktop: icon('<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/>',16),
+  download: icon('<circle cx="12" cy="12" r="9"/><path d="M12 7v8m0 0l-3-3m3 3l3-3"/>',16),
+  doc: icon('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/>',16),
+  movie: icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4m10 0h4M3 15h4m10 0h4"/>',16),
+  music: icon('<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',16),
+  photo: icon('<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 17l5-5 4 4 2-2 5 3"/>',16),
+  home: icon('<path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/>',16),
+  app: icon('<path d="M8 3L3 12h7M16 3l5 9h-7M7 16h10M5 21h14"/>',16),
+  cloud: icon('<path d="M6 18h12a4 4 0 0 0 .6-7.95A7 7 0 0 0 5.4 9.4 4.5 4.5 0 0 0 6 18z"/>',16),
+  server: icon('<rect x="4" y="4" width="16" height="6" rx="2"/><rect x="4" y="14" width="16" height="6" rx="2"/><path d="M8 7h.01M8 17h.01"/>',16),
+  drive: icon('<path d="M5 6h14l2 10H3z"/><path d="M3 16h18v3H3zM7 18h.01"/>',16),
+  filter: icon('<path d="M4 5h16l-6 7v6l-4 2v-8z"/>',16),
+  ellipsis: icon('<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',16)
+};
+
+const FilePane = {
+  props:['pane','active','icons'],
+  emits:['activate','row-menu','row-select'],
+  template:`
+    <section class="pane" :class="{active}" @mousedown="$emit('activate')">
+      <div class="pane-bar">
+        <button class="mini-btn" v-html="icons.back"></button>
+        <button class="mini-btn" style="opacity:.32" v-html="icons.forward"></button>
+        <div class="path-pill">
+          <span style="font-size:10px;color:var(--faint)">▶</span>
+          <span v-if="pane.status" class="green-dot"></span>
+          <span class="crumb">{{ pane.path }}</span>
+          <span class="search" v-html="icons.search"></span>
+        </div>
+        <button class="mini-btn" v-html="icons.ellipsis"></button>
+      </div>
+      <div class="file-area" @contextmenu.prevent="$emit('row-menu',$event,null)">
+        <div class="file-head">
+          <div class="head-cell">名称</div><div class="head-cell">修改日期</div><div class="head-cell">大小</div><div class="head-cell">种类</div>
+        </div>
+        <div class="file-list">
+          <div class="file-row" v-for="(f,i) in pane.files" :class="{selected:pane.selected===i}" :key="f.name" @click.stop="$emit('row-select',pane,i)" @contextmenu.stop.prevent="$emit('row-menu',$event,f)">
+            <div class="cell name-cell">
+              <span class="disclosure">{{ f.folder ? '›' : '' }}</span>
+              <span v-if="f.type==='app'" class="file-icon app">IJ</span>
+              <span v-else-if="f.folder" class="file-icon folder" :class="f.color || ''"></span>
+              <span v-else class="file-icon file"></span>
+              <span style="overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+              <span v-if="f.dot" class="status-dot" :style="{background:f.dot}"></span>
+              <span v-if="f.cloud" class="cloud">☁</span>
+            </div>
+            <div class="cell">{{ f.date }}</div><div class="cell">{{ f.size || '--' }}</div><div class="cell">{{ f.kind }}</div>
+          </div>
+        </div>
+        <div class="empty-lines" v-if="pane.files.length < 8">
+          <div class="empty-line" v-for="n in 12" :key="n"></div>
+        </div>
+      </div>
+    </section>`
+};
+
+createApp({
+  components:{FilePane},
+  setup(){
+    const sidebarActive = ref('projects');
+    const activePane = ref('left');
+    const viewMode = ref('list');
+    const toast = ref(false); const toastMsg = ref(''); let toastTimer;
+    const menu = reactive({open:false,x:0,y:0,item:null});
+    const sidebar = [
+      {title:'书签',items:[
+        {label:'桌面',icon:'desktop'},{label:'下载',icon:'download'},{label:'文稿',icon:'doc'},{label:'影片',icon:'movie'},{label:'音乐',icon:'music'},{label:'图片',icon:'photo'},{label:'wuu',icon:'home'},{label:'应用程序',icon:'app'},{label:'废纸篓',icon:'trash'}]},
+      {title:'iCloud',items:[{label:'iCloud 云盘',icon:'cloud'}]},
+      {title:'服务器',items:[{label:'OrbStack',icon:'server',eject:true}]},
+      {title:'位置',items:[{label:'Macintosh HD',icon:'drive'}]},
+      {title:'访达标签',items:[
+        {label:'opensource',color:'#ff9f0a'},{label:'indie-hacker',color:'#ffd60a'},{label:'projects',color:'#34c759'},{label:'temp',color:'#8e8e93'},{label:'学习',color:'transparent',outline:true},{label:'工作',color:'transparent',outline:true},{label:'重要',color:'transparent',outline:true}]},
+      {title:'工作区',items:[{label:'默认',color:'#0a84ff'}]}
+    ];
+    const leftPane = reactive({path:'projects',status:true,selected:-1,files:[
+      {name:'Projects',folder:true,color:'green',date:'2026/9/12 15:41',kind:'文件夹',dot:'#52c46c'}
+    ]});
+    const rightPane = reactive({path:'🏠  wuu',status:false,selected:3,files:[
+      {name:'下载',folder:true,date:'今天 14:08',kind:'文件夹'},
+      {name:'文稿',folder:true,date:'昨天 23:02',kind:'文件夹'},
+      {name:'Projects',folder:true,color:'green',date:'2026/9/12 15:41',kind:'文件夹',dot:'#52c46c'},
+      {name:'IdeaSnapshots',folder:true,date:'2026/9/10 20:36',kind:'文件夹'},
+      {name:'OrbStack',folder:true,date:'2026/8/25 12:46',size:'78.78 GB',kind:'文件夹',cloud:true},
+      {name:'应用程序',folder:true,date:'2026/8/17 19:19',kind:'文件夹'},
+      {name:'Obsidian',folder:true,date:'2026/8/3 11:13',kind:'文件夹'},
+      {name:'temp',folder:true,color:'gray',date:'2026/7/13 18:23',kind:'文件夹',dot:'#8e8e93'},
+      {name:'桌面',folder:true,date:'2026/7/9 13:28',kind:'文件夹'},
+      {name:'java_error_idea.hprof',type:'app',date:'2026/6/9 14:00',size:'2.86 GB',kind:'文稿'},
+      {name:'sessions',folder:true,date:'2026/4/2 17:20',kind:'文件夹'},
+      {name:'logs',folder:true,date:'2026/4/20 17:00',kind:'文件夹'},
+      {name:'fsdownload',folder:true,date:'2026/3/30 10:46',kind:'文件夹'},
+      {name:'plugins',folder:true,date:'2026/3/28 14:00',kind:'文件夹'},
+      {name:'影片',folder:true,date:'2026/3/4 15:15',kind:'文件夹'},
+      {name:'lobsterai',folder:true,date:'2026/2/28 21:23',kind:'文件夹'},
+      {name:'cloudbase-framework',folder:true,date:'2026/2/3 18:14',kind:'文件夹'},
+      {name:'intelephense',folder:true,date:'2026/1/22 13:00',kind:'文件夹'},
+      {name:'PyCharmMiscProject',folder:true,date:'2025/12/19 16:19',kind:'文件夹'},
+      {name:'go',folder:true,date:'2025/12/19 13:26',kind:'文件夹'},
+      {name:'Sunlogin',folder:true,date:'2025/12/12 10:50',kind:'文件夹'},
+      {name:'Sunlogin Files',folder:true,date:'2025/12/12 10:50',kind:'文件夹'},
+      {name:'DataGripProjects',folder:true,date:'2025/11/27 08:28',kind:'文件夹'},
+      {name:'tencent',folder:true,date:'2025/10/30 08:20',kind:'文件夹'},
+      {name:'DevEcoStudioProjects',folder:true,date:'2025/9/6 16:18',kind:'文件夹'},
+      {name:'claude-pr-config.json',date:'2025/7/29 17:16',size:'647 字节',kind:'JSON'},
+      {name:'图片',folder:true,date:'2025/7/23 22:53',kind:'文件夹'},
+      {name:'学习',folder:true,date:'2025/3/4 11:50',kind:'文件夹'},
+      {name:'临时的',folder:true,date:'2025/2/23 11:46',kind:'文件夹'},
+      {name:'cert',folder:true,date:'2024/7/18 12:00',kind:'文件夹'},
+      {name:'macos',folder:true,date:'2024/7/18 15:38',kind:'文件夹'},
+      {name:'oradiag_wuu',folder:true,date:'2024/5/21 10:50',kind:'文件夹'},
+      {name:'SSHConfig',folder:true,date:'2023/10/21 11:42',kind:'文件夹'},
+      {name:'音乐',folder:true,date:'2023/10/8 11:31',kind:'文件夹'},
+      {name:'公共',folder:true,date:'2023/8/17 20:09',kind:'文件夹'}
+    ]});
+    const activeTitle = computed(()=>activePane.value==='left'?leftPane.path:rightPane.path.replace('🏠  ',''));
+    function selectSidebar(item){ sidebarActive.value=item.label; toastMsg.value=`已切换到「${item.label}」`; showToast(); }
+    function selectRow(pane,i){pane.selected=i; activePane.value=pane===leftPane?'left':'right'}
+    function openRowMenu(e,item){ activePane.value = e.currentTarget.closest('.pane')===document.querySelector('.pane')?'left':'right'; menu.item=item; menu.open=true; const w=238,h=385; menu.x=Math.min(e.clientX,innerWidth-w-12); menu.y=Math.min(e.clientY,innerHeight-h-12); }
+    function closeMenu(){menu.open=false}
+    function menuAction(action){menu.open=false;toastMsg.value=`${action}${menu.item?'：'+menu.item.name:''}`;showToast()}
+    function showToast(){toast.value=true;clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.value=false,1300)}
+    return {icons,sidebar,sidebarActive,activePane,viewMode,leftPane,rightPane,activeTitle,menu,toast,toastMsg,selectSidebar,selectRow,openRowMenu,closeMenu,menuAction,showToast};
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

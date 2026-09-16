@@ -5,17 +5,60 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>单词叠叠消 Demo</title>
 <link rel="stylesheet" href="./style.css">
+<style>
+/* 游戏区统一缩放，解决短屏手机看不到预选槽和操作按钮的问题 */
+.gameStage{transform-origin:top center;will-change:transform}
+@media (max-width:700px){
+  html,body{width:100%;height:100%;min-height:0;overflow:hidden}
+  .wrap{width:100%;height:100%;min-height:0;padding:0;overflow:hidden}
+  .phone{width:100vw;height:100vh;min-height:0;border-radius:0;box-shadow:none}
+  @supports (height:100dvh){.phone{height:100dvh}}
+  .screen{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}
+  .screen.game{padding-left:8px;padding-right:8px;overflow:hidden}
+  .tabs{display:none}
+}
+</style>
 </head>
 <body>
 <div class="wrap"><div class="tabs"><button data-go="home" class="on">首页</button><button data-go="levels">关卡</button><button data-go="game">游戏</button><button data-go="words">单词本</button><button data-go="settings">设置</button></div><main class="phone">
 <section class="screen on" data-screen="home"><i class="cloud c1"></i><i class="cloud c2"></i><i class="leaf l1"></i><i class="leaf l2"></i><div class="ground"></div><div class="logo">单词叠叠消<small>★</small></div><div class="hero"><div class="mascot"><img class="noto" src="https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f436.svg" alt="dog"></div><div class="card green hc1">CAT</div><div class="card pink hc2"><img class="noto" src="https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f34e.svg" alt="apple"></div><div class="card yellow hc3">APPLE</div><div class="card blue hc4">/kæt/</div></div><button class="start" data-go="levels">▶ 开始游戏</button><div class="sub">玩着消除 · 轻松记单词</div><nav class="homeMenu"><button data-go="levels"><div><span>🎁</span>关卡</div></button><button data-go="words"><div><span>📖</span>单词本</div></button><button data-go="settings"><div><span>⚙️</span>设置</div></button></nav></section>
 <section class="screen" data-screen="levels"><div class="ground"></div><header class="top"><button class="back" data-go="home">‹</button><h1>选择关卡</h1><div class="life">❤️ <b>5</b> ➕</div></header><div class="levelScroll"><div class="chapterTabs" id="chapterTabs"></div><div class="chapter" id="chapterPanel"><div class="chapterTitle" id="chapterTitle"></div><div class="chapterDesc" id="chapterDesc"></div><div class="chapterStats"><span>本章词汇 <b id="chapterWords">0</b></span><span id="chapterProgressText">0/4</span></div><div class="prog"><span>⭐</span><div class="track"><i id="chapterProgress" style="width:0"></i></div></div></div><div class="levelGrid" id="grid"></div><div class="difficultyBar"><span>难度</span><i id="difficultyBar" style="--pct:20%"></i><b id="difficultyText">入门</b></div><div class="chapter"><b>Demo 说明</b><div class="chapterDesc">前期以图片 + 英文 + 中文建立联想；随后加入音标、更多词组、更多层级和更高遮挡率。Demo 已开放全部关卡，方便直接测试难度变化。</div></div></div></section>
-<section class="screen game" data-screen="game"><div class="ground"></div><button class="close" data-go="levels">×</button><div class="gameTop"><div class="learn"><span>🗓 当前词库</span><b id="todayCount">12</b><small>个单词</small><div class="stageTag" id="stageTag">🌱 入门</div></div><div class="center"><div class="ribbon" id="levelTitle">第 1 关</div><div class="pnl"><span>⭐</span><div class="track"><i id="levelProgress" style="width:0"></i></div><strong id="levelProgressText">0/3</strong></div></div><div class="right"><div class="life">❤️❤️❤️ ➕</div><div class="goal"><b>目标</b><span>找出 <em id="goalCount">3</em> 组单词</span></div></div></div><div class="pile" id="pile"></div><div class="success" id="success">消除成功</div><div class="slots" id="slots"></div><div class="actions"><button class="act yellow" data-act="undo"><span class="ico">↩</span>撤回<i class="badge">3</i></button><button class="act blue" data-act="hint"><span class="ico">💡</span>提示<i class="badge">3</i></button><button class="act purple" data-act="shuffle"><span class="ico">🔀</span>洗牌<i class="badge">3</i></button></div><div class="toast" id="toast"></div></section>
+<section class="screen game" data-screen="game"><div class="ground"></div><button class="close" data-go="levels">×</button><div class="gameStage" id="gameStage"><div class="gameTop"><div class="learn"><span>🗓 当前词库</span><b id="todayCount">12</b><small>个单词</small><div class="stageTag" id="stageTag">🌱 入门</div></div><div class="center"><div class="ribbon" id="levelTitle">第 1 关</div><div class="pnl"><span>⭐</span><div class="track"><i id="levelProgress" style="width:0"></i></div><strong id="levelProgressText">0/3</strong></div></div><div class="right"><div class="life">❤️❤️❤️ ➕</div><div class="goal"><b>目标</b><span>找出 <em id="goalCount">3</em> 组单词</span></div></div></div><div class="pile" id="pile"></div><div class="success" id="success">消除成功</div><div class="slots" id="slots"></div><div class="actions"><button class="act yellow" data-act="undo"><span class="ico">↩</span>撤回<i class="badge">3</i></button><button class="act blue" data-act="hint"><span class="ico">💡</span>提示<i class="badge">3</i></button><button class="act purple" data-act="shuffle"><span class="ico">🔀</span>洗牌<i class="badge">3</i></button></div></div><div class="toast" id="toast"></div></section>
 <section class="screen list" data-screen="words"><header class="top"><button class="back" data-go="home">‹</button><h1>我的单词本</h1><span></span></header><div class="wordScroll"><input id="wordSearch" class="searchInput" placeholder="搜索单词 / 中文释义..." /><div class="wordTools" id="wordTools"></div><div class="wordCount" id="wordCount"></div><div class="words" id="words"></div></div></section>
 <section class="screen list" data-screen="settings"><header class="top"><button class="back" data-go="home">‹</button><h1>设置</h1><span></span></header><div class="settings"><div class="row"><span>🔊 音效</span><i class="switch"></i></div><div class="row"><span>🎵 背景音乐</span><i class="switch"></i></div><div class="row"><span>📳 震动反馈</span><i class="switch"></i></div></div><div class="settings"><div class="row"><span>🗑️ 清除缓存</span><small>12.3 MB　›</small></div><div class="row"><span>ⓘ 关于我们</span><b>›</b></div><div class="row"><span>🛡️ 隐私政策</span><b>›</b></div><div class="row"><span>▣ 用户协议</span><b>›</b></div></div><button class="danger">退出登录</button><div class="ver">v1.0.0 · Web Demo</div></section>
 <div class="mask" id="win"><div class="result"><div class="bigstar">⭐</div><div class="rr">恭喜通关！</div><div class="dog"><img class="noto" src="https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/svg/emoji_u1f436.svg" alt="dog"></div><h2 id="winLevel">第 1 关</h2><p>本关练习了 <b id="winWords">3</b> 个单词</p><div class="rewards"><span>⭐ +3</span><span>❤️ +1</span><span>📖 +1</span></div><button class="next" data-act="next">下一关</button><button class="link" data-go="levels">返回关卡</button></div></div>
 </main></div>
 <script src="./data.js"></script>
 <script src="./app.js"></script>
+<script>
+(function(){
+  const stage=document.getElementById('gameStage');
+  const game=document.querySelector('.screen.game');
+  let raf=0;
+  function fitGameStage(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      if(!stage||!game)return;
+      stage.style.transform='scale(1)';
+      const cs=getComputedStyle(game);
+      const padTop=parseFloat(cs.paddingTop)||0,padBottom=parseFloat(cs.paddingBottom)||0;
+      const available=Math.max(320,game.clientHeight-padTop-padBottom-4);
+      const natural=stage.scrollHeight;
+      const scale=Math.min(1,available/natural);
+      stage.style.transform=`scale(${scale})`;
+      stage.dataset.scale=scale.toFixed(3);
+    });
+  }
+  window.addEventListener('resize',fitGameStage,{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(fitGameStage,120),{passive:true});
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-go="game"],[data-level],[data-act="next"]'))setTimeout(fitGameStage,0);
+  });
+  new MutationObserver(()=>{
+    if(game.classList.contains('on'))fitGameStage();
+  }).observe(game,{attributes:true,attributeFilter:['class']});
+  setTimeout(fitGameStage,0);
+})();
+</script>
 </body>
 </html>

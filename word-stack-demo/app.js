@@ -7,6 +7,39 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b
 
 function imgHTML(w,cls='noto'){return `<img class="${cls}" src="${NOTO}emoji_u${w.cp}.svg" alt="${w.emoji}" onerror="this.replaceWith(document.createTextNode('${w.emoji}'))">`}
 function contentHTML(card){if(card.kind==='image')return imgHTML(card.word);return card.text}
+
+// 文本卡片自适应：优先保持单行并缩小字体，仍放不下时再 break-all 换行。
+function fitText(el,{max=21,min=11,padding=8,wrapMax=18}={}){
+ el.style.overflow='hidden';
+ el.style.textAlign='center';
+ el.style.lineHeight='1.06';
+ el.style.padding=`0 ${padding}px`;
+ el.style.whiteSpace='nowrap';
+ el.style.wordBreak='normal';
+ el.style.overflowWrap='normal';
+ let size=max;
+ el.style.fontSize=size+'px';
+ while(size>min&&el.scrollWidth>el.clientWidth){size--;el.style.fontSize=size+'px'}
+ if(el.scrollWidth<=el.clientWidth)return;
+ // 极长英文/音标允许断行，保证所有内容严格留在卡片内部。
+ el.style.whiteSpace='normal';
+ el.style.wordBreak='break-all';
+ el.style.overflowWrap='anywhere';
+ el.style.padding=`4px ${padding}px`;
+ size=Math.min(wrapMax,max);
+ el.style.fontSize=size+'px';
+ while(size>min&&(el.scrollWidth>el.clientWidth||el.scrollHeight>el.clientHeight)){size--;el.style.fontSize=size+'px'}
+}
+function renderCardContent(el,card,isSlot=false){
+ if(card.kind==='image'){
+   el.innerHTML=imgHTML(card.word);
+   el.style.overflow='hidden';
+   return;
+ }
+ el.textContent=card.text;
+ fitText(el,isSlot?{max:13,min:7,padding:3,wrapMax:11}:{max:21,min:11,padding:8,wrapMax:18});
+}
+
 function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,rnd=Math.random){for(let i=arr.length-1;i>0;i--){let j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
@@ -79,13 +112,13 @@ function draw(){
    let long=c.kind==='text'&&c.text.length>8;
    b.className=`tile ${c.color} ${covered?'covered':''} ${removed.has(i)?'gone':''} ${long?'wordLong':''}`;
    b.style.left=`calc(${c.x}/410 * 100%)`;b.style.top=c.y+'px';b.style.zIndex=c.z+10;
-   b.innerHTML=contentHTML(c);b.onclick=()=>pick(i);pile.appendChild(b)
+   b.onclick=()=>pick(i);pile.appendChild(b);renderCardContent(b,c,false)
  });
  slotbox.innerHTML='';
  for(let i=0;i<7;i++){
    let d=document.createElement('div'),idx=slots[i],has=idx!==undefined;
    d.className='slot '+(has?'has ':'')+(has&&cards[idx].kind==='text'&&cards[idx].text.length>7?'long':'');
-   if(has)d.innerHTML=contentHTML(cards[idx]);slotbox.appendChild(d)
+   slotbox.appendChild(d);if(has)renderCardContent(d,cards[idx],true)
  }
  const cfg=levelConfigs[currentLevel-1],pct=Math.round(matchedGroups/cfg.groups*100);
  document.getElementById('levelProgress').style.width=pct+'%';

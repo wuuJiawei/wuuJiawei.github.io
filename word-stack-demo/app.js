@@ -2,43 +2,92 @@ const screens=[...document.querySelectorAll('.screen')],tabs=[...document.queryS
 let selectedChapter=0,currentLevel=1,cards=[],slots=[],removed=new Set(),matchedGroups=0,currentWords=[];
 const pile=document.getElementById('pile'),slotbox=document.getElementById('slots'),toast=document.getElementById('toast');
 
-function go(n){screens.forEach(x=>x.classList.toggle('on',x.dataset.screen===n));tabs.forEach(x=>x.classList.toggle('on',x.dataset.go===n));win.classList.remove('show');if(n==='levels')renderLevels();if(n==='words')renderWordBook()}
+function go(n){
+ screens.forEach(x=>x.classList.toggle('on',x.dataset.screen===n));
+ tabs.forEach(x=>x.classList.toggle('on',x.dataset.go===n));
+ win.classList.remove('show');
+ if(n==='levels')renderLevels();
+ if(n==='words')renderWordBook();
+ if(n==='game')requestAnimationFrame(()=>requestAnimationFrame(refitCardTexts));
+}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
 
 function imgHTML(w,cls='noto'){return `<img class="${cls}" src="${NOTO}emoji_u${w.cp}.svg" alt="${w.emoji}" onerror="this.replaceWith(document.createTextNode('${w.emoji}'))">`}
 function contentHTML(card){if(card.kind==='image')return imgHTML(card.word);return card.text}
 
-// 文本卡片自适应：优先保持单行并缩小字体，仍放不下时再 break-all 换行。
-function fitText(el,{max=21,min=11,padding=8,wrapMax=18}={}){
+// 文本自适应：测量内部文本节点，而不是卡片容器本身，避免 grid/overflow 导致 scrollWidth 误判。
+function fitText(el,{max=21,min=10,padding=8,wrapMax=17}={}){
+ const text=el.querySelector('.fitText');
+ if(!text)return;
+ const width=Math.max(0,el.clientWidth-padding*2);
+ const height=Math.max(0,el.clientHeight-padding*2);
+ if(width<8||height<8)return;
+
  el.style.overflow='hidden';
- el.style.textAlign='center';
- el.style.lineHeight='1.06';
- el.style.padding=`0 ${padding}px`;
- el.style.whiteSpace='nowrap';
- el.style.wordBreak='normal';
- el.style.overflowWrap='normal';
+ el.style.padding='0';
+ text.style.display='block';
+ text.style.boxSizing='border-box';
+ text.style.textAlign='center';
+ text.style.lineHeight='1.04';
+ text.style.margin='0 auto';
+ text.style.padding='0';
+ text.style.maxWidth='none';
+ text.style.width='max-content';
+ text.style.whiteSpace='nowrap';
+ text.style.wordBreak='normal';
+ text.style.overflowWrap='normal';
+
  let size=max;
- el.style.fontSize=size+'px';
- while(size>min&&el.scrollWidth>el.clientWidth){size--;el.style.fontSize=size+'px'}
- if(el.scrollWidth<=el.clientWidth)return;
- // 极长英文/音标允许断行，保证所有内容严格留在卡片内部。
- el.style.whiteSpace='normal';
- el.style.wordBreak='break-all';
- el.style.overflowWrap='anywhere';
- el.style.padding=`4px ${padding}px`;
+ text.style.fontSize=size+'px';
+ while(size>min&&(text.scrollWidth>width||text.scrollHeight>height)){
+   size--;
+   text.style.fontSize=size+'px';
+ }
+ if(text.scrollWidth<=width&&text.scrollHeight<=height){
+   text.style.width='auto';
+   text.style.maxWidth=width+'px';
+   return;
+ }
+
+ // 到最小字号仍放不下时才换行，确保任何英文/音标都不会越出卡片。
  size=Math.min(wrapMax,max);
- el.style.fontSize=size+'px';
- while(size>min&&(el.scrollWidth>el.clientWidth||el.scrollHeight>el.clientHeight)){size--;el.style.fontSize=size+'px'}
+ text.style.fontSize=size+'px';
+ text.style.width=width+'px';
+ text.style.maxWidth=width+'px';
+ text.style.whiteSpace='normal';
+ text.style.wordBreak='break-all';
+ text.style.overflowWrap='anywhere';
+ while(size>min&&(text.scrollWidth>width||text.scrollHeight>height)){
+   size--;
+   text.style.fontSize=size+'px';
+ }
 }
 function renderCardContent(el,card,isSlot=false){
  if(card.kind==='image'){
    el.innerHTML=imgHTML(card.word);
    el.style.overflow='hidden';
+   el.style.padding='0';
    return;
  }
- el.textContent=card.text;
- fitText(el,isSlot?{max:13,min:7,padding:3,wrapMax:11}:{max:21,min:11,padding:8,wrapMax:18});
+ const span=document.createElement('span');
+ span.className='fitText';
+ span.textContent=card.text;
+ el.innerHTML='';
+ el.appendChild(span);
+ el.style.padding='0';
+ fitText(el,isSlot?{max:13,min:7,padding:3,wrapMax:11}:{max:21,min:10,padding:7,wrapMax:16});
 }
+function refitCardTexts(){
+ cards.forEach((c,i)=>{
+   const el=pile.children[i];
+   if(el&&c.kind==='text')fitText(el,{max:21,min:10,padding:7,wrapMax:16});
+ });
+ [...slotbox.children].forEach(el=>{
+   if(el.querySelector('.fitText'))fitText(el,{max:13,min:7,padding:3,wrapMax:11});
+ });
+}
+window.addEventListener('resize',()=>requestAnimationFrame(refitCardTexts),{passive:true});
+window.addEventListener('orientationchange',()=>setTimeout(refitCardTexts,120),{passive:true});
 
 function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,rnd=Math.random){for(let i=arr.length-1;i>0;i--){let j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
@@ -139,6 +188,7 @@ function draw(){
  const cfg=levelConfigs[currentLevel-1],pct=Math.round(matchedGroups/cfg.groups*100);
  document.getElementById('levelProgress').style.width=pct+'%';
  document.getElementById('levelProgressText').textContent=`${matchedGroups}/${cfg.groups}`;
+ if(document.querySelector('.screen.game.on'))requestAnimationFrame(refitCardTexts);
 }
 function showToast(t){toast.textContent=t;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1200)}
 function pick(i){

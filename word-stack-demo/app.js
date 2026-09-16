@@ -40,7 +40,7 @@ function renderCardContent(el,card,isSlot=false){
  fitText(el,isSlot?{max:13,min:7,padding:3,wrapMax:11}:{max:21,min:11,padding:8,wrapMax:18});
 }
 
-function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|seed)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,rnd=Math.random){for(let i=arr.length-1;i>0;i--){let j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
 function chapterWords(ch){return words.filter(w=>chapters[ch].cats.includes(w.cat))}

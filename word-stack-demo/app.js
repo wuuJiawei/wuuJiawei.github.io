@@ -40,7 +40,7 @@ function renderCardContent(el,card,isSlot=false){
  fitText(el,isSlot?{max:13,min:7,padding:3,wrapMax:11}:{max:21,min:11,padding:8,wrapMax:18});
 }
 
-function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seeded(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|seed)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuffle(arr,rnd=Math.random){for(let i=arr.length-1;i>0;i--){let j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
 function chapterWords(ch){return words.filter(w=>chapters[ch].cats.includes(w.cat))}
@@ -105,14 +105,30 @@ function isCovered(i){
  const a=cards[i];if(removed.has(i))return false;
  return cards.some((b,j)=>j!==i&&!removed.has(j)&&b.z>a.z&&overlaps(a,b));
 }
-function draw(){
+
+// 棋盘节点只在换关时创建一次。点击卡片时仅更新状态，避免整棵 DOM 重建导致文字重新缩放和卡片抖动。
+function ensureBoardNodes(){
+ const stable=pile.children.length===cards.length&&cards.every((c,i)=>pile.children[i]?.dataset.cardId===c.id);
+ if(stable)return;
  pile.innerHTML='';
  cards.forEach((c,i)=>{
-   let b=document.createElement('button'),covered=isCovered(i);
-   let long=c.kind==='text'&&c.text.length>8;
+   const b=document.createElement('button');
+   b.dataset.cardId=c.id;
+   b.className=`tile ${c.color}`;
+   b.onclick=()=>pick(i);
+   pile.appendChild(b);
+   renderCardContent(b,c,false);
+ });
+}
+function draw(){
+ ensureBoardNodes();
+ cards.forEach((c,i)=>{
+   const b=pile.children[i],covered=isCovered(i);
+   const long=c.kind==='text'&&c.text.length>8;
    b.className=`tile ${c.color} ${covered?'covered':''} ${removed.has(i)?'gone':''} ${long?'wordLong':''}`;
-   b.style.left=`calc(${c.x}/410 * 100%)`;b.style.top=c.y+'px';b.style.zIndex=c.z+10;
-   b.onclick=()=>pick(i);pile.appendChild(b);renderCardContent(b,c,false)
+   b.style.left=`calc(${c.x}/410 * 100%)`;
+   b.style.top=c.y+'px';
+   b.style.zIndex=c.z+10;
  });
  slotbox.innerHTML='';
  for(let i=0;i<7;i++){
@@ -147,6 +163,7 @@ function match(){
 function startLevel(id){
  currentLevel=id;selectedChapter=levelConfigs[id-1].chapter;
  const cfg=levelConfigs[id-1];cards=buildCards(cfg);slots=[];removed=new Set();matchedGroups=0;
+ pile.innerHTML='';
  document.getElementById('todayCount').textContent=chapterWords(cfg.chapter).length;
  document.getElementById('levelTitle').textContent=`第 ${id} 关`;
  document.getElementById('goalCount').textContent=cfg.groups;

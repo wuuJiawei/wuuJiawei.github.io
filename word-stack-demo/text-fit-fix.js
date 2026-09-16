@@ -12,7 +12,10 @@
     const text=(span.textContent||'').trim();
     if(!text)return;
 
-    // 强制建立独立、安全的内容区，不再依赖父级 grid/scrollWidth 的测量结果。
+    // slot 原本是 static。内部文字使用 absolute 时必须先建立自己的定位上下文，
+    // 否则文字会相对 gameStage 定位，点击卡片后就会“飘”到棋盘中央。
+    if(isSlot)box.style.setProperty('position','relative','important');
+
     box.style.setProperty('overflow','hidden','important');
     box.style.setProperty('padding','0','important');
     span.style.setProperty('position','absolute','important');
@@ -29,6 +32,7 @@
     span.style.setProperty('padding','0','important');
     span.style.setProperty('overflow','hidden','important');
     span.style.setProperty('line-height','1.02','important');
+    span.style.setProperty('pointer-events','none','important');
 
     const rect=box.getBoundingClientRect();
     const available=Math.max(16,(box.clientWidth||rect.width)-(isSlot?6:24));

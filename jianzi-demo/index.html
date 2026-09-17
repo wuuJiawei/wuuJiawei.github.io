@@ -2,11 +2,17 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>见字 · UI Demo</title>
-  <meta name="theme-color" content="#f6f7f5" />
+  <meta name="theme-color" content="#f5f6f3" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <script src="./app.js"></script>
+<div class="demo">
+  <aside class="side desktop-only"><h1>见字</h1><div class="line"></div><div class="slogan">每天刷 5 分钟，<br>吸收世界上最好的思想</div><div class="note">UI Gate v1.0<br>首页为母版<br>其余页面不得低于首页精度</div></aside>
+  <main class="phone"><div class="viewport"><div class="island"></div><div id="pages-root"></div></div></main>
+  <aside class="desktop-only"><div class="index"><h3>页面索引</h3><button class="active" data-jump="home-reco"><span class="dot"></span>01 首页 · 推荐</button><button data-jump="home-follow"><span class="dot"></span>02 首页 · 关注</button><button data-jump="discover"><span class="dot"></span>03 发现页</button><button data-jump="search"><span class="dot"></span>04 搜索页</button><button data-jump="detail"><span class="dot"></span>05 详情页 · 评论</button><button data-jump="messages"><span class="dot"></span>06 消息页</button><button data-jump="message-detail"><span class="dot"></span>07 消息详情</button><button data-jump="publish"><span class="dot"></span>08 发布页</button><button data-jump="publish-success"><span class="dot"></span>09 发布成功</button><button data-jump="publish-fail"><span class="dot"></span>10 发布失败</button><button data-jump="profile"><span class="dot"></span>11 我的</button><button data-jump="favorites"><span class="dot"></span>12 我的收藏</button><button data-jump="edit-profile"><span class="dot"></span>13 编辑资料</button><button data-jump="settings"><span class="dot"></span>14 系统设置</button></div><div class="token">UI Gate v1.0<br>· 393 × 852（iPhone 15 Pro 逻辑尺寸）<br>· 以首页为母版收敛：圆角、卡片、留白、绿色强调、宋体内容标题。<br>· 未达到首页精细度的页面不通过。</div></aside>
+</div>
+<script src="./app.js"></script>
 </body>
 </html>
